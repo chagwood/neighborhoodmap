@@ -1,1 +1,8 @@
-import './styles.scss'
+import 'bootstrap';
+import './styles.scss';
+
+$(document).ready(function () {
+    $('[data-toggle="offcanvas"]').click(function () {
+      $('.row-offcanvas').toggleClass('active')
+    });
+  });

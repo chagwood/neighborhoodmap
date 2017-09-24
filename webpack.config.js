@@ -44,6 +44,12 @@ module.exports = {
             'process.env': {
                 NODE_ENV: JSON.stringify(nodeEnv)
             }
-        })
+        }),
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery',
+            Popper: ['popper.js', 'default']
+          })
     ]
 };
