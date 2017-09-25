@@ -10339,8 +10339,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 $(document).ready(function () {
     $('[data-toggle="offcanvas"]').click(function () {
       $('.row-offcanvas').toggleClass('active');
-      console.log("nooooooooo");
-        //test
+      console.log("yes");
+
     });
   });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))

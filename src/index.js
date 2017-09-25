@@ -3,6 +3,8 @@ import './styles.scss';
 
 $(document).ready(function () {
     $('[data-toggle="offcanvas"]').click(function () {
-      $('.row-offcanvas').toggleClass('active')
+      $('.row-offcanvas').toggleClass('active');
+      console.log("yes");
+        //test
     });
   });

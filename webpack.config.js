@@ -1,15 +1,15 @@
 const webpack = require('webpack');
-const nodeEnv = process.env.NODE_ENV || 'production';
+const path = require('path');
+//const nodeEnv = process.env.NODE_ENV || 'production';
 module.exports = {
     devtool: 'source-map',
     devServer: {
-        contentBase: './dist'
+        contentBase: path.resolve(__dirname,'dist')
     },
-    entry: {
-        filename: './src/index.js'
-    },
+    entry: './src/index.js',
     output: {
-        filename: './dist/bundle.js'
+        filename: 'bundle.js',
+        path: path.resolve(__dirname, 'dist')
     },
     module: {
         loaders: [{
@@ -40,11 +40,14 @@ module.exports = {
             sourceMap: true
         }),
         */
+        /*
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify(nodeEnv)
             }
         }),
+        */
+       // new webpack.HotModuleReplacementPlugin(),
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
