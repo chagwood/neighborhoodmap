@@ -3,14 +3,15 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Reston Neighborhood Map</title>
+        <title>Reston Map</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="bundle.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-ukoWUS6t1TVxoXi3SP_VfFTj9IRLQ78&callback=initMap" async defer></script>
     </head>
-    <body>
+    <body class="bg-dark">
         <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Navbar</a>
+            <a class="navbar-brand" href="#">Reston Map</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -42,56 +43,13 @@
             </div>
           </nav>
       
-          <div class="container">
+          <div class="container-fluid">
             
-                  <div class="row row-offcanvas row-offcanvas-right">
-            
-                    <div class="col-12 col-md-9">
-                      <p class="float-right d-md-none">
-                        <button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas">Toggle nav</button>
-                      </p>
-                      <div class="jumbotron">
-                        <h1>Hello, worldz!</h1>
-                        <p>This is an example to show the potential of an offcanvas layout pattern in Bootstrap. Try some responsive-range viewport sizes to see it in action.</p>
-                      </div>
-                      <div class="row">
-                        <div class="col-6 col-lg-4">
-                          <h2>Heading</h2>
-                          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                          <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-                        </div><!--/span-->
-                        <div class="col-6 col-lg-4">
-                          <h2>Heading</h2>
-                          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                          <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-                        </div><!--/span-->
-                        <div class="col-6 col-lg-4">
-                          <h2>Heading</h2>
-                          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                          <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-                        </div><!--/span-->
-                        <div class="col-6 col-lg-4">
-                          <h2>Heading</h2>
-                          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                          <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-                        </div><!--/span-->
-                        <div class="col-6 col-lg-4">
-                          <h2>Heading</h2>
-                          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                          <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-                        </div><!--/span-->
-                        <div class="col-6 col-lg-4">
-                          <h2>Heading</h2>
-                          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                          <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-                        </div><!--/span-->
-                      </div><!--/row-->
-                    </div><!--/span-->
-            
-                    <div class="col-6 col-md-3 sidebar-offcanvas" id="sidebar">
+                  <div class="row row-offcanvas row-offcanvas-left">
+                    <div class="col-9 col-md-3 sidebar-offcanvas bg-dark" id="sidebar">
                       <div class="list-group">
                         <a href="#" class="list-group-item active">Link</a>
-                        <a href="#" class="list-group-item">Link</a>
+                        <a href="#" class="list-group-item">Link Link Link</a>
                         <a href="#" class="list-group-item">Link</a>
                         <a href="#" class="list-group-item">Link</a>
                         <a href="#" class="list-group-item">Link</a>
@@ -102,13 +60,26 @@
                         <a href="#" class="list-group-item">Link</a>
                       </div>
                     </div><!--/span-->
+
+                    <div class="col-12 col-md-9">
+                      <div class="row">
+                        <div class="col-sm-12">
+                          <div class="d-md-none">
+                            <button type="button" class="btn btn-primary btn-sm btn-toggle" data-toggle="offcanvas">Map Options</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-12">
+                            <div id="map-container" style="height:calc(100vh - 120px);">
+                            </div>
+                        </div>
+                      </div>
+                      
+                    </div><!--/span-->
+            
+                    
                   </div><!--/row-->
-            
-                  <hr>
-            
-                  <footer>
-                    <p>&copy; Company 2017</p>
-                  </footer>
             
                 </div><!--/.container-->
     </body>

@@ -10339,10 +10339,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 $(document).ready(function () {
     $('[data-toggle="offcanvas"]').click(function () {
       $('.row-offcanvas').toggleClass('active');
-      console.log("nooooooooo");
+      console.log("yesss");
         //test
     });
   });
+
+  var map;
+  function initMap() {
+    map = new google.maps.Map(document.getElementById('map-container'), {
+      center: {lat: -34.397, lng: 150.644},
+      zoom: 8
+    });
+  }
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
 
 /***/ }),
