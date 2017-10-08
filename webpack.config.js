@@ -28,7 +28,18 @@ module.exports = {
             }, {
                 loader: "sass-loader" // compiles Sass to CSS
             }]
-        }]
+        },
+        {
+            test: require.resolve('jquery'),
+            use: [{
+                loader: 'expose-loader',
+                options: 'jQuery'
+            },{
+                loader: 'expose-loader',
+                options: '$'
+            }]
+        }
+    ]
     },
     plugins: [
         /*
@@ -49,10 +60,11 @@ module.exports = {
         }),
        // new webpack.HotModuleReplacementPlugin(),
         new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery',
+            '$': 'jquery',
+            'jQuery': 'jquery',
+            'jquery': 'jquery',
             'window.jQuery': 'jquery',
-            Popper: ['popper.js', 'default']
+            'window.jquery': 'jquery'
           })
     ]
 };
