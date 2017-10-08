@@ -11,5 +11,7 @@ $(document).ready(function () {
       center: {lat: -34.397, lng: 150.644},
       zoom: 8
     });
+
+    google.maps.event.trigger(map, 'resize');
   }
   window.initMap = initMap;

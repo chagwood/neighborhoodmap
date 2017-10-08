@@ -5,6 +5,11 @@ $offcanvas-width: 250px;
     
 }
 
+.uk-navbar-container:not(.uk-navbar-transparent) {
+    background: linear-gradient(to left, #28a5f5, #1e87f0);
+    color: rgba(255,255,255,0.8);
+}
+
 .uk-offcanvas-bar {
     width: $offcanvas-width;
 }
@@ -28,6 +33,6 @@ $offcanvas-width: 250px;
 
 @media (min-width: 960px) {
     .ch-sidebar-left+.ch-main {
-        padding-left: 240px;
+        padding-left: 250px;
     }
 }
