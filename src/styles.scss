@@ -1,22 +1,49 @@
-$drkbg: #222;
 $offcanvas-width: 250px;
 
 .uk-offcanvas-content {
-    
+    .uk-navbar-container {
+        /* background: linear-gradient(to left, #222425, #12354a); */
+        background: #222425;
+        color: rgba(255,255,255,0.8);
+
+        .uk-navbar-nav>li>a {
+            color: rgba(255, 255, 255, 0.8);
+
+            &:hover {
+                color: rgba(255, 255, 255, 1);
+            }
+        }
+
+        .uk-logo {
+            color: rgba(255,255,255,1);
+            font-size: 1rem;
+            text-transform: uppercase
+        }
+
+        .uk-navbar-toggle {
+            padding: 0px 0px 0px 15px;
+            color: rgba(255,255,255,0.7);
+        }
+    }
+
+    .ch-sidebar-left {
+        background: #333;
+    }
+
+    .ch-offcanvas-wrapper {
+        .uk-offcanvas-bar {
+            width: $offcanvas-width;
+        }
+    }
 }
 
-.uk-navbar-container:not(.uk-navbar-transparent) {
-    background: linear-gradient(to left, #28a5f5, #1e87f0);
-    color: rgba(255,255,255,0.8);
-}
 
-.uk-offcanvas-bar {
-    width: $offcanvas-width;
-}
 
-:not(.uk-offcanvas-flip)>.uk-offcanvas-content-animation {
-    left: $offcanvas-width;
-}
+
+
+
+
+
 
 
 .ch-sidebar-left {
