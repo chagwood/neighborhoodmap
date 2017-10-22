@@ -3,8 +3,10 @@ import './styles.scss';
 var map;
 var infowindow;
 var placesService;
-var mapCenter = {lat: 38.958292, lng: -77.360039};
-var placeMarkers = [];
+var mapCenter = {lat: 38.958292, lng: -77.360039}; //initial map center and central point which the radius is measued from when finding places
+var currentPlaceMarkers = []; //array of map markers that are displayed at any given time
+var placeMarkersCache = {}; //object to cache info for a selected place
+var selectedPlaceName = ""; //currently selected place name
 
 /* name attribute is used in Google Places; label for navigation */
 var placesList = [{
@@ -258,19 +260,35 @@ function AppViewModel() {
     var self = this;
     self.places = ko.observableArray(placesList);
     self.displayPlaces = function() {
-        //console.log("Display places for [" + this.name + "]");
         clearMapMarkers();
-        placesService.nearbySearch({
-            location: mapCenter,
-            radius: 5000,
-            type: this.name
-        }, placesServiceCallback);
+        selectedPlaceName = this.name;
+        if(placeMarkersCache[selectedPlaceName] == undefined) {
+            this.markers = new Array();
+            placesService.nearbySearch({
+                location: mapCenter,
+                radius: 5000,
+                type: this.name
+            }, placesServiceCallback);
+        } else {
+            displayMapMarkers(this.name);
+        }
+        //console.log("Display places for [" + this.name + "]");
     };
 }
 
 function placesServiceCallback(results, status) {
+    console.log(results);
+    console.log(status);
     if (status === google.maps.places.PlacesServiceStatus.OK) {
+        if(selectedPlaceName != "") {
+            if(placeMarkersCache[selectedPlaceName] == undefined) {
+                placeMarkersCache[selectedPlaceName] = new Array();
+            }
+        }
         for (var i = 0; i < results.length; i++) {
+            if(selectedPlaceName != "") {
+                placeMarkersCache[selectedPlaceName].push(results[i]);
+            }
             createMapMarker(results[i]);
         }
     }
@@ -282,16 +300,23 @@ function createMapMarker(place) {
         map: map,
         position: place.geometry.location
     });
-    placeMarkers.push(marker);
+    currentPlaceMarkers.push(marker);
     google.maps.event.addListener(marker, 'click', function() {
         infowindow.setContent(place.name);
         infowindow.open(map, this);
     });
 }
 
+/* If the markers from a place has been cached, display the markers stored in the item's array */
+function displayMapMarkers(name) {
+    for(var i = 0; i < placeMarkersCache[name].length; i++) {
+        createMapMarker(placeMarkersCache[name][i]);
+    }
+}
+
 function clearMapMarkers() {
-    for(var i =0; i < placeMarkers.length; i++) {
-        placeMarkers[i].setMap(null);
+    for(var i =0; i < currentPlaceMarkers.length; i++) {
+        currentPlaceMarkers[i].setMap(null);
     }
 }
 
