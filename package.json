@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "expose-loader": "^0.7.3",
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "knockout": "^3.4.2"
   }
 }
