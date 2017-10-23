@@ -22,7 +22,7 @@
             <nav class="uk-navbar">
                 <div class="uk-navbar-left"> 
 					<a class="uk-navbar-toggle uk-hidden@m" uk-navbar-toggle-icon href="#ch-offcanvas" uk-toggle></a> 
-					<a href="../" class="uk-navbar-item uk-logo"><span uk-icon="icon: location" style="margin-right: 5px;"></span>Reston Local</a> 
+					<a href="../" class="uk-navbar-item uk-logo"><span class="ch-accent-color" uk-icon="icon: location" style="margin-right: 5px;"></span>Reston Local</a> 
 				</div>
                 <div class="uk-navbar-right uk-visible@m">
                     <ul class="uk-navbar-nav">
@@ -34,21 +34,35 @@
             </nav>
         </div>
         <div class="ch-sidebar-left uk-visible@m">
-            <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" data-bind="foreach: places">
-                <li class=""><a href="#" data-bind="text: label, click: $parent.displayPlaces"></a></li>
+            <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" style="margin-top: 0px !important">
+                <li class="ch-nav-heading">ACTIONS</li>
+                <li class=""><a class="ch-nav-link" href="#">Reset Map</a></li>
+            </ul>
+            <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
+                <li class="ch-nav-heading">PLACES</li>
+            </ul>
+            <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" data-bind="foreach: places" style="margin-top: 0px !important">
+                <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayPlaces"></a></li>
             </ul>
 		</div>
         <div class="ch-main">
             <div class="">
-                <div id="map-container" uk-height-viewport="expand: true">
+                <div id="map-container" uk-height-viewport>
 
                 </div>
             </div>
 		</div>
-        <div id="ch-offcanvas" class="ch-offcanvas-wrapper" uk-offcanvas="overlay: true; mode: reveal">
+        <div id="ch-offcanvas" class="ch-offcanvas-wrapper" uk-offcanvas="overlay: true; mode: push">
             <div class="uk-offcanvas-bar"> 
-                <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" data-bind="foreach: places">
-                    <li class=""><a href="#" data-bind="text: label, click: $parent.displayPlaces"></a></li>
+                <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" style="margin-top: 0px !important">
+                    <li class="ch-nav-heading">ACTIONS</li>
+                    <li class=""><a class="ch-nav-link" href="#">Reset Map</a></li>
+                </ul>
+                <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
+                    <li class="ch-nav-heading">PLACES</li>
+                </ul>
+                <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" data-bind="foreach: places" style="margin-top: 0px !important">
+                    <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayPlaces"></a></li>
                 </ul>
 			</div>
         </div>

@@ -7,6 +7,8 @@ var mapCenter = {lat: 38.958292, lng: -77.360039}; //initial map center and cent
 var currentPlaceMarkers = []; //array of map markers that are displayed at any given time
 var placeMarkersCache = {}; //object to cache info for a selected place
 var selectedPlaceName = ""; //currently selected place name
+var infoWindowMaxWidth = "200";
+var infoWindowImageHeight = "125";
 
 /* name attribute is used in Google Places; label for navigation */
 var placesList = [{
@@ -186,6 +188,7 @@ function initMap() {
     map = new google.maps.Map(document.getElementById('map-container'), {
         center: mapCenter,
         zoom: 13,
+        clickableIcons: false,
         styles: [{
             "featureType": "all",
             "elementType": "all",
@@ -249,9 +252,13 @@ function initMap() {
         }] //end of styles array
     });
 
-    google.maps.event.trigger(map, 'resize');
+    
     infowindow = new google.maps.InfoWindow();
     placesService = new google.maps.places.PlacesService(map);
+    google.maps.event.trigger(map, 'resize');
+    google.maps.event.addListener(map, "click", function(event) {
+        infowindow.close();
+    });
 
 } //end of initMap
 window.initMap = initMap; //must set this to window or initial initMap callback doesn't work
@@ -261,6 +268,7 @@ function AppViewModel() {
     self.places = ko.observableArray(placesList);
     self.displayPlaces = function() {
         clearMapMarkers();
+        UIkit.offcanvas("#ch-offcanvas").hide();
         selectedPlaceName = this.name;
         if(placeMarkersCache[selectedPlaceName] == undefined) {
             this.markers = new Array();
@@ -277,14 +285,15 @@ function AppViewModel() {
 }
 
 function placesServiceCallback(results, status) {
-    console.log(results);
-    console.log(status);
+    //console.log(results);
+    //console.log(status);
     if (status === google.maps.places.PlacesServiceStatus.OK) {
         if(selectedPlaceName != "") {
             if(placeMarkersCache[selectedPlaceName] == undefined) {
                 placeMarkersCache[selectedPlaceName] = new Array();
             }
         }
+
         for (var i = 0; i < results.length; i++) {
             if(selectedPlaceName != "") {
                 placeMarkersCache[selectedPlaceName].push(results[i]);
@@ -296,15 +305,53 @@ function placesServiceCallback(results, status) {
 
 function createMapMarker(place) {
     var placeLoc = place.geometry.location;
+    //console.log(place);
     var marker = new google.maps.Marker({
         map: map,
+        //icon: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+        //animation: google.maps.Animation.DROP,
         position: place.geometry.location
     });
+
     currentPlaceMarkers.push(marker);
+    var infoWindowContent = document.createElement("div");
+    infoWindowContent.style.maxWidth = infoWindowMaxWidth + 'px';
+    var infoWindowTitle = document.createElement("span");
+    infoWindowTitle.appendChild(document.createTextNode(place.name));
+    infoWindowTitle.style.display = "block";
+    infoWindowTitle.style.fontWeight = "bold";
+    infoWindowTitle.style.paddingBottom = "5px";
+    infoWindowContent.appendChild(infoWindowTitle);
+    /*
+    if(place.photos != undefined) {
+        var infoWindowImageContainer = document.createElement("div");
+        infoWindowImageContainer.style.overflow = "hidden";
+        infoWindowImageContainer.style.width = "100%";
+        infoWindowImageContainer.style.maxHeight = "100px";
+        var infoWindowImage = new Image();
+        infoWindowImage.src = place.photos[0].getUrl({'maxWidth': 150, 'maxHeight': 150});
+        infoWindowImage.style.width = "100%";
+        infoWindowImageContainer.appendChild(infoWindowImage)
+        infoWindowContent.appendChild(infoWindowImageContainer);
+    }*/
+
+
+    var infoWindowImageContainer = document.createElement("div");
+    infoWindowImageContainer.style.overflow = "hidden";
+    infoWindowImageContainer.style.width = "100%";
+    infoWindowImageContainer.style.maxHeight = infoWindowImageHeight + "px";
+    var infoWindowImage = new Image();
+    infoWindowImage.src = 'https://maps.googleapis.com/maps/api/streetview?size=' + infoWindowMaxWidth + 'x' + infoWindowImageHeight + '&location=' + place.vicinity + '&fov=90&key=AIzaSyA-ukoWUS6t1TVxoXi3SP_VfFTj9IRLQ78';
+    infoWindowImage.style.width = "100%";
+    infoWindowImageContainer.appendChild(infoWindowImage)
+    infoWindowContent.appendChild(infoWindowImageContainer);
+
     google.maps.event.addListener(marker, 'click', function() {
-        infowindow.setContent(place.name);
+        infowindow.setContent(infoWindowContent);
         infowindow.open(map, this);
     });
+
+    
 }
 
 /* If the markers from a place has been cached, display the markers stored in the item's array */
