@@ -282,6 +282,9 @@ function AppViewModel() {
         }
         //console.log("Display places for [" + this.name + "]");
     };
+    self.resetMap = function() {
+        clearMapMarkers();
+    };
 }
 
 function placesServiceCallback(results, status) {
