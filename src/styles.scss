@@ -1,7 +1,27 @@
 $offcanvas-width: 250px;
 $accent-color: #f76f63;
 
+.uk-modal-full {
+    background: rgba(0,0,0,0.8);
+}
+
+.uk-modal-dialog {
+    background-color: transparent;
+    color: white;
+}
+
+.white-text {
+    color: #fff;
+}
+
+.loading-text {
+    margin-top: 10px;
+    margin-bottom: 10px; 
+}
+
 .uk-offcanvas-content {
+    
+
     .uk-navbar-container {
         /* background: linear-gradient(to left, #222425, #12354a); */
         background: #222425;
@@ -52,6 +72,13 @@ $accent-color: #f76f63;
 
     .ch-sidebar-left {
         background: #333;
+    }
+
+    .pin-counter {
+        color: $accent-color;
+        font-weight: bold;
+        text-transform: uppercase;
+
     }
 
     .ch-offcanvas-wrapper {

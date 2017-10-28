@@ -17,6 +17,14 @@
 </head>
 
 <body>
+    <div id="wait-overlay" class="uk-modal-full" uk-modal>
+            <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+        <div class="uk-modal-dialog uk-margin-auto-vertical" style="text-align: center;">
+                <h4 class="white-text loading-text">Please wait while fresh listings are retrieved</h4>
+                <div uk-spinner></div>
+                <h4 class="white-text loading-text"><span data-bind="text: categoriesLoaded"></span> of <span data-bind="text: totalCategories"></span> categories loaded</h4>
+        </div>
+    </div>
     <div class="uk-offcanvas-content">
         <div class="uk-navbar-container uk-light">
             <nav class="uk-navbar">
@@ -34,7 +42,8 @@
             </nav>
         </div>
         <div class="ch-sidebar-left uk-visible@m">
-            <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" style="margin-top: 0px !important">
+            <div class="pin-counter"><span data-bind="text: pinsDisplayed"></span> pins shown</div>
+            <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
                 <li class="ch-nav-heading">ACTIONS</li>
                 <li class=""><a class="ch-nav-link" href="#" data-bind="click: resetMap">Reset Map</a></li>
             </ul>
@@ -54,7 +63,8 @@
 		</div>
         <div id="ch-offcanvas" class="ch-offcanvas-wrapper" uk-offcanvas="overlay: true; mode: push">
             <div class="uk-offcanvas-bar"> 
-                <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" style="margin-top: 0px !important">
+                <div class="pin-counter"><span data-bind="text: pinsDisplayed"></span> pins shown</div>
+                <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
                     <li class="ch-nav-heading">ACTIONS</li>
                     <li class=""><a class="ch-nav-link" href="#">Reset Map</a></li>
                 </ul>
