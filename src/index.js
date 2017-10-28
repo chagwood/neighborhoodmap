@@ -6,13 +6,12 @@ var placesService;
 var mapCenter = {lat: 38.958292, lng: -77.360039}; //initial map center and central point which the radius is measued from when finding places
 var currentPlaceMarkers = []; //array of map markers that are displayed at any given time
 var uniquePlaceMarkerIDs = {};
-var placeMarkersCache = {}; //object to cache info for a selected place (REMOVE)
 var placeMarkersData = {}; //object to cache info for a selected place
 var selectedPlaceName = ""; //currently selected place name
 var infoWindowMaxWidth = "200";
 var infoWindowImageHeight = "125";
-var defaultMarkerIcon = "http://maps.google.com/mapfiles/ms/icons/ylw-pushpin.png";
-var selectedMarkerIcon = "http://maps.google.com/mapfiles/ms/icons/grn-pushpin.png";
+var defaultMarkerIcon = "//maps.google.com/mapfiles/ms/icons/ylw-pushpin.png";
+var selectedMarkerIcon = "//maps.google.com/mapfiles/ms/icons/grn-pushpin.png";
 var viewModel = "";
 /* ------------------------------------------------------------------ */
 /* name attribute is used in Google Places; label for navigation */
@@ -220,10 +219,25 @@ function initMap() {
     infowindow = new google.maps.InfoWindow();
     placesService = new google.maps.places.PlacesService(map);
     google.maps.event.trigger(map, 'resize');
+    
+    /* adjust the height of the map container */
+    /*
+    var topNav = document.getElementById("top-navbar");
+    var mapContainer = document.getElementById('map-container');
+    var tapNavHeight = topNav.clientHeight;
+    var mapContainerHeight = mapContainer.clientHeight;
+    var adjustedHeight = mapContainerHeight-tapNavHeight;    
+    //mapContainer.style.height = adjustedHeight + "px";
+    */
+
     google.maps.event.addListener(map, "click", function(event) {
         infowindow.close();
         resetMapMarkers();
     });
+    google.maps.event.addListener(infowindow,'closeclick',function(){
+        this.setMap(null); //removes the marker
+        resetMapMarkers();
+     });
 } //end of initMap
 window.initMap = initMap; //must set this to window or initial initMap callback doesn't work
 /* ------------------------------------------------------------------ */
@@ -239,11 +253,14 @@ function AppViewModel() {
     self.incrementPinCounter = function() {
         this.pinsDisplayed(this.pinsDisplayed() + 1);
     };
+    self.resetPinCounter = function() {
+        this.pinsDisplayed(0);
+    };
     self.displayPlaces = function() {
         clearMapMarkers();
         UIkit.offcanvas("#ch-offcanvas").hide();
         selectedPlaceName = this.name;
-        if(placeMarkersCache[selectedPlaceName] == undefined) {
+        if(placeMarkersData[selectedPlaceName] == undefined) {
             placesService.nearbySearch({
                 location: mapCenter,
                 radius: 5000,
@@ -256,6 +273,7 @@ function AppViewModel() {
     };
     self.resetMap = function() {
         clearMapMarkers();
+        displayAllMakers();
     };
 }
 /* ------------------------------------------------------------------ */
@@ -347,14 +365,14 @@ function placesServiceCallback(results, status) {
     //console.log(status);
     if (status === google.maps.places.PlacesServiceStatus.OK) {
         if(selectedPlaceName != "") {
-            if(placeMarkersCache[selectedPlaceName] == undefined) {
-                placeMarkersCache[selectedPlaceName] = new Array();
+            if(placeMarkersData[selectedPlaceName] == undefined) {
+                placeMarkersData[selectedPlaceName] = new Array();
             }
         }
 
         for (var i = 0; i < results.length; i++) {
             if(selectedPlaceName != "") {
-                placeMarkersCache[selectedPlaceName].push(results[i]);
+                placeMarkersData[selectedPlaceName].push(results[i]);
             }
             createMapMarker(results[i]);
         }
@@ -415,8 +433,10 @@ function createMapMarker(place) {
 /* ------------------------------------------------------------------ */
 /* If the markers from a place has been cached, display the markers stored in the item's array */
 function displayMapMarkers(name) {
-    for(var i = 0; i < placeMarkersCache[name].length; i++) {
-        createMapMarker(placeMarkersCache[name][i]);
+    viewModel.resetPinCounter();
+    for(var i = 0; i < placeMarkersData[name].length; i++) {
+        createMapMarker(placeMarkersData[name][i]);
+        viewModel.incrementPinCounter();
     }
 }
 /* ------------------------------------------------------------------ */
@@ -429,6 +449,20 @@ function clearMapMarkers() {
 function resetMapMarkers() {
     for(var i =0; i < currentPlaceMarkers.length; i++) {
         currentPlaceMarkers[i].setIcon(defaultMarkerIcon);
+    }
+}
+/* ------------------------------------------------------------------ */
+function displayAllMakers() {
+    uniquePlaceMarkerIDs = {};
+    viewModel.resetPinCounter();
+    for(var placeCategory in placeMarkersData) {
+        for(var placePin in placeMarkersData[placeCategory]) {
+            if(uniquePlaceMarkerIDs[placeMarkersData[placeCategory][placePin].id] == undefined) {
+                createMapMarker(placeMarkersData[placeCategory][placePin]);
+                uniquePlaceMarkerIDs[placeMarkersData[placeCategory][placePin].id] = placeMarkersData[placeCategory][placePin].id;
+                viewModel.incrementPinCounter();
+            }
+        }
     }
 }
 /* ------------------------------------------------------------------ */

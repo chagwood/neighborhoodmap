@@ -10,18 +10,24 @@ $accent-color: #f76f63;
     color: white;
 }
 
-.white-text {
-    color: #fff;
-}
-
 .loading-text {
     margin-top: 10px;
     margin-bottom: 10px; 
+    color: #fff;
 }
 
-.uk-offcanvas-content {
-    
+.about-text {
+    margin-top: 5px;
+    margin-bottom: 5px; 
+    color: #fff;
+}
 
+.uk-offcanvas-content, .ch-offcanvas-wrapper {
+
+    #map-container {
+        height: calc(100vh - 80px);
+    }
+    
     .uk-navbar-container {
         /* background: linear-gradient(to left, #222425, #12354a); */
         background: #222425;

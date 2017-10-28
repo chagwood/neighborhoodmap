@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --progress",
-    "start": "webpack-dev-server --open"
+    "start": "webpack-dev-server --open",
+    "deploy": "scp dist/* pi@ghost.local:/var/www/html/reston"
   },
   "author": "",
   "license": "ISC",

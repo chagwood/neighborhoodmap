@@ -17,26 +17,32 @@
 </head>
 
 <body>
-    <div id="wait-overlay" class="uk-modal-full" uk-modal>
+    <div id="wait-overlay" class="uk-modal-full" uk-modal="bg-close: false; esc-close: false;">
+            <!-- <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button> -->
+        <div class="uk-modal-dialog uk-margin-auto-vertical" style="text-align: center;">
+                <h4 class="loading-text">Please wait while fresh listings are retrieved</h4>
+                <div uk-spinner></div>
+                <h4 class="loading-text"><span data-bind="text: categoriesLoaded"></span> of <span data-bind="text: totalCategories"></span> categories loaded</h4>
+        </div>
+    </div>
+    <div id="about-overlay" class="uk-modal-full" uk-modal>
             <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
         <div class="uk-modal-dialog uk-margin-auto-vertical" style="text-align: center;">
-                <h4 class="white-text loading-text">Please wait while fresh listings are retrieved</h4>
-                <div uk-spinner></div>
-                <h4 class="white-text loading-text"><span data-bind="text: categoriesLoaded"></span> of <span data-bind="text: totalCategories"></span> categories loaded</h4>
+                <h2 class="about-text">Reston Local</h2>
+                <h4 class="about-text">by Chase Hagwood</h4>
+                <h4 class="about-text">October 2017</h4>
         </div>
     </div>
     <div class="uk-offcanvas-content">
         <div class="uk-navbar-container uk-light">
-            <nav class="uk-navbar">
+            <nav class="uk-navbar" id="top-navbar">
                 <div class="uk-navbar-left"> 
 					<a class="uk-navbar-toggle uk-hidden@m" uk-navbar-toggle-icon href="#ch-offcanvas" uk-toggle></a> 
 					<a href="../" class="uk-navbar-item uk-logo"><span class="ch-accent-color" uk-icon="icon: location" style="margin-right: 5px;"></span>Reston Local</a> 
 				</div>
                 <div class="uk-navbar-right uk-visible@m">
                     <ul class="uk-navbar-nav">
-                        <li><a href="../pro">Pro</a></li>
-                        <li><a href="../docs/">Documentation</a></li>
-                        <li><a href="../changelog">Changelog</a></li>
+                        <li><a href="#about-overlay" uk-toggle>About</a></li>
                     </ul>
                 </div>
             </nav>
@@ -45,7 +51,7 @@
             <div class="pin-counter"><span data-bind="text: pinsDisplayed"></span> pins shown</div>
             <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
                 <li class="ch-nav-heading">ACTIONS</li>
-                <li class=""><a class="ch-nav-link" href="#" data-bind="click: resetMap">Reset Map</a></li>
+                <li class=""><a class="ch-nav-link" href="#" data-bind="click: resetMap">Reset Filters</a></li>
             </ul>
             <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
                 <li class="ch-nav-heading">PLACES</li>
@@ -56,7 +62,7 @@
 		</div>
         <div class="ch-main">
             <div class="">
-                <div id="map-container" uk-height-viewport>
+                <div id="map-container" style="height: 100vh">
 
                 </div>
             </div>
@@ -66,7 +72,7 @@
                 <div class="pin-counter"><span data-bind="text: pinsDisplayed"></span> pins shown</div>
                 <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
                     <li class="ch-nav-heading">ACTIONS</li>
-                    <li class=""><a class="ch-nav-link" href="#">Reset Map</a></li>
+                    <li class=""><a class="ch-nav-link" href="#">Reset Filters</a></li>
                 </ul>
                 <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
                     <li class="ch-nav-heading">PLACES</li>
