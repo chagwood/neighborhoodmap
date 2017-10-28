@@ -10,8 +10,8 @@ var placeMarkersData = {}; //object to cache info for a selected place
 var selectedPlaceName = ""; //currently selected place name
 var infoWindowMaxWidth = "200";
 var infoWindowImageHeight = "125";
-var defaultMarkerIcon = "//maps.google.com/mapfiles/ms/icons/ylw-pushpin.png";
-var selectedMarkerIcon = "//maps.google.com/mapfiles/ms/icons/grn-pushpin.png";
+var defaultMarkerIcon = "//maps.google.com/mapfiles/ms/icons/red-pushpin.png";
+var selectedMarkerIcon = "//maps.google.com/mapfiles/ms/icons/ylw-pushpin.png";
 var viewModel = "";
 /* ------------------------------------------------------------------ */
 /* name attribute is used in Google Places; label for navigation */
@@ -258,7 +258,6 @@ function AppViewModel() {
     };
     self.displayPlaces = function() {
         clearMapMarkers();
-        UIkit.offcanvas("#ch-offcanvas").hide();
         selectedPlaceName = this.name;
         if(placeMarkersData[selectedPlaceName] == undefined) {
             placesService.nearbySearch({
@@ -276,6 +275,7 @@ function AppViewModel() {
         displayAllMakers();
     };
     self.reloadData = function() {
+        UIkit.offcanvas("#ch-offcanvas").hide();
         clearMapMarkers();
         placeMarkersData = {};
         uniquePlaceMarkerIDs = {};

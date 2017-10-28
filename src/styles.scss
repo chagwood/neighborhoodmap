@@ -2,7 +2,7 @@ $offcanvas-width: 250px;
 $accent-color: #f76f63;
 
 .uk-modal-full {
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.85);
 }
 
 .uk-modal-dialog {
@@ -20,6 +20,10 @@ $accent-color: #f76f63;
     margin-top: 5px;
     margin-bottom: 5px; 
     color: #fff;
+}
+
+.accent-text {
+    color: $accent-color;
 }
 
 .uk-offcanvas-content, .ch-offcanvas-wrapper {
