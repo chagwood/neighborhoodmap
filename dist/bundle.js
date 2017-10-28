@@ -375,6 +375,13 @@ function AppViewModel() {
         clearMapMarkers();
         displayAllMakers();
     };
+    self.reloadData = function() {
+        clearMapMarkers();
+        placeMarkersData = {};
+        uniquePlaceMarkerIDs = {};
+        localStorage.clear();
+        loadInitialPlaces();
+    }
 }
 /* ------------------------------------------------------------------ */
 function loadInitialPlaces() {
@@ -449,6 +456,7 @@ function getPlacesForType(type) {
                         
                     }
                 }
+                localStorage.setItem('mapPlaces', JSON.stringify(placeMarkersData));
                 //increment counter in modal
                 viewModel.incrementLoadCounter();
                 resolve(results);
@@ -541,6 +549,7 @@ function displayMapMarkers(name) {
 }
 /* ------------------------------------------------------------------ */
 function clearMapMarkers() {
+    viewModel.resetPinCounter();
     for(var i =0; i < currentPlaceMarkers.length; i++) {
         currentPlaceMarkers[i].setMap(null);
     }
@@ -566,10 +575,20 @@ function displayAllMakers() {
     }
 }
 /* ------------------------------------------------------------------ */
+function loadLocalStorage() {
+    if(localStorage.getItem('mapPlaces') === null) {
+        loadInitialPlaces();
+    } else {
+        placeMarkersData = JSON.parse(localStorage.getItem('mapPlaces'));
+        clearMapMarkers();
+        displayAllMakers();
+    }
+}
+/* ------------------------------------------------------------------ */
 $(document).ready(function() {
     viewModel = new AppViewModel();
     ko.applyBindings(viewModel);
-    loadInitialPlaces();
+    loadLocalStorage();
 });
 /* ------------------------------------------------------------------ */
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
