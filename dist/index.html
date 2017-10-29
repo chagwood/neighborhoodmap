@@ -17,6 +17,13 @@
 </head>
 
 <body>
+    <div id="notice-overlay" class="uk-modal-full" uk-modal>
+        <div class="uk-modal-dialog uk-margin-auto-vertical" style="text-align: center;">
+                <h2 class="notice-text">Uh oh!</h2>
+                <h4 class="notice-message"><span data-bind="text: notificationText"></span></h4>
+                <button class="uk-button uk-button-primary uk-modal-close" type="button">Close</button>
+        </div>
+    </div>
     <div id="wait-overlay" class="uk-modal-full" uk-modal="bg-close: false; esc-close: false;">
             <!-- <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button> -->
         <div class="uk-modal-dialog uk-margin-auto-vertical" style="text-align: center;">
@@ -24,7 +31,6 @@
                 <div uk-spinner></div>
                 <h4 class="loading-text"><span class="accent-text" style="font-weight: bold;" data-bind="text: categoriesLoaded"></span> of <span class="accent-text" style="font-weight: bold;" data-bind="text: totalCategories"></span> categories loaded</h4>
                 <h4 class="loading-text"><span class="accent-text" style="font-weight: bold;" data-bind="text: pinsDisplayed"></span> locations found</h4>
-                
         </div>
     </div>
     <div id="about-overlay" class="uk-modal-full" uk-modal>
@@ -50,7 +56,7 @@
             </nav>
         </div>
         <div class="ch-sidebar-left uk-visible@m">
-            <div class="pin-counter"><span data-bind="text: pinsDisplayed"></span> pins shown</div>
+            <div class="pin-counter"><span data-bind="text: pinsDisplayed">0</span> pins shown</div>
             <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
                 <li class="ch-nav-heading">ACTIONS</li>
                 <li class=""><a class="ch-nav-link" href="#" data-bind="click: resetMap">Reset Filters</a></li>
@@ -65,14 +71,14 @@
 		</div>
         <div class="ch-main">
             <div class="">
-                <div id="map-container" style="height: 100vh">
+                <div id="map-container">
 
                 </div>
             </div>
 		</div>
         <div id="ch-offcanvas" class="ch-offcanvas-wrapper" uk-offcanvas="overlay: true; mode: push">
             <div class="uk-offcanvas-bar"> 
-                <div class="pin-counter"><span data-bind="text: pinsDisplayed"></span> pins shown</div>
+                <div class="pin-counter"><span data-bind="text: pinsDisplayed">0</span> pins shown</div>
                 <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
                     <li class="ch-nav-heading">ACTIONS</li>
                     <li class=""><a class="ch-nav-link" href="#" data-bind="click: resetMap">Reset Filters</a></li>

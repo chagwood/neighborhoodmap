@@ -12,7 +12,8 @@ var infoWindowMaxWidth = "200";
 var infoWindowImageHeight = "125";
 var defaultMarkerIcon = "//maps.google.com/mapfiles/ms/icons/red-pushpin.png";
 var selectedMarkerIcon = "//maps.google.com/mapfiles/ms/icons/ylw-pushpin.png";
-var viewModel = "";
+var warningText = "";
+var viewModel;
 /* ------------------------------------------------------------------ */
 /* name attribute is used in Google Places; label for navigation */
 var placesList = [{
@@ -245,6 +246,7 @@ function AppViewModel() {
     var self = this;
     self.categoriesLoaded = ko.observable(0);
     self.pinsDisplayed = ko.observable(0);
+    self.notificationText = ko.observable("");
     self.totalCategories = placesList.length;
     self.places = ko.observableArray(placesList);
     self.incrementLoadCounter = function() {
@@ -256,6 +258,10 @@ function AppViewModel() {
     self.resetPinCounter = function() {
         this.pinsDisplayed(0);
     };
+    self.changeNoticeMessage = function(noticeText) {
+        this.notificationText(noticeText);
+    };
+
     self.displayPlaces = function() {
         clearMapMarkers();
         selectedPlaceName = this.name;
@@ -275,12 +281,7 @@ function AppViewModel() {
         displayAllMakers();
     };
     self.reloadData = function() {
-        UIkit.offcanvas("#ch-offcanvas").hide();
-        clearMapMarkers();
-        placeMarkersData = {};
-        uniquePlaceMarkerIDs = {};
-        localStorage.clear();
-        loadInitialPlaces();
+        reloadAllData();
     }
 }
 /* ------------------------------------------------------------------ */
@@ -292,7 +293,7 @@ function loadInitialPlaces() {
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     var promiseChain = placesList.reduce(function(promise, place) {
       return promise.then(function(result) {
-        return Promise.all([delay(500), getPlacesForType(place.name)]);
+        return Promise.all([delay(100), getPlacesForType(place.name)]);
       })
     }, Promise.resolve())
 
@@ -300,6 +301,14 @@ function loadInitialPlaces() {
         //close the modal
         UIkit.modal("#wait-overlay").hide();
         //drop all the pins...
+    }).catch(function(result){
+        if(result == "OVER_QUERY_LIMIT") {
+            viewModel.changeNoticeMessage("Async calls were throttled. Try refreshing data again.");
+            UIkit.modal("#notice-overlay").show();
+        } else {
+            viewModel.changeNoticeMessage(result);
+            UIkit.modal("#notice-overlay").show();
+        }
     });
 
     /*
@@ -362,6 +371,7 @@ function getPlacesForType(type) {
                 resolve(results);
             } else {
                 // reject status upon un-successful status
+                //console.log("[" + type + "] " + "STATUS: " + status);
                 reject(status);
             }
         });
@@ -473,6 +483,15 @@ function displayAllMakers() {
             }
         }
     }
+}
+/* ------------------------------------------------------------------ */
+function reloadAllData() {
+    UIkit.offcanvas("#ch-offcanvas").hide();
+    clearMapMarkers();
+    placeMarkersData = {};
+    uniquePlaceMarkerIDs = {};
+    localStorage.clear();
+    loadInitialPlaces();
 }
 /* ------------------------------------------------------------------ */
 function loadLocalStorage() {

@@ -112,7 +112,8 @@ var infoWindowMaxWidth = "200";
 var infoWindowImageHeight = "125";
 var defaultMarkerIcon = "//maps.google.com/mapfiles/ms/icons/red-pushpin.png";
 var selectedMarkerIcon = "//maps.google.com/mapfiles/ms/icons/ylw-pushpin.png";
-var viewModel = "";
+var warningText = "";
+var viewModel;
 /* ------------------------------------------------------------------ */
 /* name attribute is used in Google Places; label for navigation */
 var placesList = [{
@@ -345,6 +346,7 @@ function AppViewModel() {
     var self = this;
     self.categoriesLoaded = ko.observable(0);
     self.pinsDisplayed = ko.observable(0);
+    self.notificationText = ko.observable("");
     self.totalCategories = placesList.length;
     self.places = ko.observableArray(placesList);
     self.incrementLoadCounter = function() {
@@ -356,6 +358,10 @@ function AppViewModel() {
     self.resetPinCounter = function() {
         this.pinsDisplayed(0);
     };
+    self.changeNoticeMessage = function(noticeText) {
+        this.notificationText(noticeText);
+    };
+
     self.displayPlaces = function() {
         clearMapMarkers();
         selectedPlaceName = this.name;
@@ -375,12 +381,7 @@ function AppViewModel() {
         displayAllMakers();
     };
     self.reloadData = function() {
-        UIkit.offcanvas("#ch-offcanvas").hide();
-        clearMapMarkers();
-        placeMarkersData = {};
-        uniquePlaceMarkerIDs = {};
-        localStorage.clear();
-        loadInitialPlaces();
+        reloadAllData();
     }
 }
 /* ------------------------------------------------------------------ */
@@ -392,7 +393,7 @@ function loadInitialPlaces() {
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     var promiseChain = placesList.reduce(function(promise, place) {
       return promise.then(function(result) {
-        return Promise.all([delay(500), getPlacesForType(place.name)]);
+        return Promise.all([delay(100), getPlacesForType(place.name)]);
       })
     }, Promise.resolve())
 
@@ -400,6 +401,14 @@ function loadInitialPlaces() {
         //close the modal
         UIkit.modal("#wait-overlay").hide();
         //drop all the pins...
+    }).catch(function(result){
+        if(result == "OVER_QUERY_LIMIT") {
+            viewModel.changeNoticeMessage("Async calls were throttled. Try refreshing data again.");
+            UIkit.modal("#notice-overlay").show();
+        } else {
+            viewModel.changeNoticeMessage(result);
+            UIkit.modal("#notice-overlay").show();
+        }
     });
 
     /*
@@ -462,6 +471,7 @@ function getPlacesForType(type) {
                 resolve(results);
             } else {
                 // reject status upon un-successful status
+                //console.log("[" + type + "] " + "STATUS: " + status);
                 reject(status);
             }
         });
@@ -573,6 +583,15 @@ function displayAllMakers() {
             }
         }
     }
+}
+/* ------------------------------------------------------------------ */
+function reloadAllData() {
+    UIkit.offcanvas("#ch-offcanvas").hide();
+    clearMapMarkers();
+    placeMarkersData = {};
+    uniquePlaceMarkerIDs = {};
+    localStorage.clear();
+    loadInitialPlaces();
 }
 /* ------------------------------------------------------------------ */
 function loadLocalStorage() {
@@ -10907,7 +10926,7 @@ exports = module.exports = __webpack_require__(7)(undefined);
 
 
 // module
-exports.push([module.i, ".uk-modal-full {\n  background: rgba(0, 0, 0, 0.85); }\n\n.uk-modal-dialog {\n  background-color: transparent;\n  color: white; }\n\n.loading-text {\n  margin-top: 10px;\n  margin-bottom: 10px;\n  color: #fff; }\n\n.about-text {\n  margin-top: 5px;\n  margin-bottom: 5px;\n  color: #fff; }\n\n.accent-text {\n  color: #f76f63; }\n\n.uk-offcanvas-content #map-container, .ch-offcanvas-wrapper #map-container {\n  height: calc(100vh - 80px); }\n\n.uk-offcanvas-content .uk-navbar-container, .ch-offcanvas-wrapper .uk-navbar-container {\n  /* background: linear-gradient(to left, #222425, #12354a); */\n  background: #222425;\n  color: rgba(255, 255, 255, 0.8); }\n  .uk-offcanvas-content .uk-navbar-container .uk-navbar-nav > li > a, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-nav > li > a {\n    color: rgba(255, 255, 255, 0.8); }\n    .uk-offcanvas-content .uk-navbar-container .uk-navbar-nav > li > a:hover, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-nav > li > a:hover {\n      color: #f76f63; }\n  .uk-offcanvas-content .uk-navbar-container .uk-logo, .ch-offcanvas-wrapper .uk-navbar-container .uk-logo {\n    color: white;\n    font-size: 1rem;\n    text-transform: uppercase; }\n  .uk-offcanvas-content .uk-navbar-container .uk-navbar-toggle, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-toggle {\n    padding: 0px 0px 0px 15px;\n    color: rgba(255, 255, 255, 0.7); }\n\n.uk-offcanvas-content .uk-nav-default, .ch-offcanvas-wrapper .uk-nav-default {\n  font-size: 1rem; }\n\n.uk-offcanvas-content .ch-nav-heading, .ch-offcanvas-wrapper .ch-nav-heading {\n  color: #fff;\n  font-weight: bold;\n  border-bottom: 1px solid #fff; }\n\n.uk-offcanvas-content .ch-accent-color, .ch-offcanvas-wrapper .ch-accent-color {\n  color: #f76f63; }\n\n.uk-offcanvas-content .ch-nav-link, .ch-offcanvas-wrapper .ch-nav-link {\n  transition: .1s ease-in-out;\n  transition-property: color,background-color; }\n  .uk-offcanvas-content .ch-nav-link:hover, .ch-offcanvas-wrapper .ch-nav-link:hover {\n    color: #f76f63; }\n\n.uk-offcanvas-content .ch-sidebar-left, .ch-offcanvas-wrapper .ch-sidebar-left {\n  background: #333; }\n\n.uk-offcanvas-content .pin-counter, .ch-offcanvas-wrapper .pin-counter {\n  color: #f76f63;\n  font-weight: bold;\n  text-transform: uppercase; }\n\n.uk-offcanvas-content .ch-offcanvas-wrapper .uk-offcanvas-bar, .ch-offcanvas-wrapper .ch-offcanvas-wrapper .uk-offcanvas-bar {\n  width: 250px; }\n\n.ch-sidebar-left {\n  position: fixed;\n  top: 80px;\n  bottom: 0;\n  box-sizing: border-box;\n  width: 240px !important;\n  padding: 40px 40px 60px 40px;\n  border-right: 1px #e5e5e5 solid;\n  overflow: auto; }\n\n@media (min-width: 960px) {\n  .ch-sidebar-left + .ch-main {\n    padding-left: 240px; } }\n", ""]);
+exports.push([module.i, ".uk-modal-full {\n  background: rgba(0, 0, 0, 0.75); }\n\n.uk-modal-dialog {\n  background-color: transparent;\n  color: white; }\n\n.loading-text, .notice-text {\n  margin-top: 10px;\n  margin-bottom: 10px;\n  color: #fff; }\n\n.notice-message {\n  margin-top: 10px;\n  margin-bottom: 20px; }\n\n.about-text {\n  margin-top: 5px;\n  margin-bottom: 5px;\n  color: #fff; }\n\n.accent-text {\n  color: #f76f63; }\n\n.uk-offcanvas-content #map-container, .ch-offcanvas-wrapper #map-container {\n  height: calc(100vh - 80px); }\n\n.uk-offcanvas-content .uk-navbar-container, .ch-offcanvas-wrapper .uk-navbar-container {\n  /* background: linear-gradient(to left, #222425, #12354a); */\n  background: #222425;\n  color: rgba(255, 255, 255, 0.8); }\n  .uk-offcanvas-content .uk-navbar-container .uk-navbar-nav > li > a, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-nav > li > a {\n    color: rgba(255, 255, 255, 0.8); }\n    .uk-offcanvas-content .uk-navbar-container .uk-navbar-nav > li > a:hover, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-nav > li > a:hover {\n      color: #f76f63; }\n  .uk-offcanvas-content .uk-navbar-container .uk-logo, .ch-offcanvas-wrapper .uk-navbar-container .uk-logo {\n    color: white;\n    font-size: 1rem;\n    text-transform: uppercase; }\n  .uk-offcanvas-content .uk-navbar-container .uk-navbar-toggle, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-toggle {\n    padding: 0px 0px 0px 15px;\n    color: rgba(255, 255, 255, 0.7); }\n\n.uk-offcanvas-content .uk-nav-default, .ch-offcanvas-wrapper .uk-nav-default {\n  font-size: 1rem; }\n\n.uk-offcanvas-content .ch-nav-heading, .ch-offcanvas-wrapper .ch-nav-heading {\n  color: #fff;\n  font-weight: bold;\n  border-bottom: 1px solid #fff; }\n\n.uk-offcanvas-content .ch-accent-color, .ch-offcanvas-wrapper .ch-accent-color {\n  color: #f76f63; }\n\n.uk-offcanvas-content .ch-nav-link, .ch-offcanvas-wrapper .ch-nav-link {\n  transition: .1s ease-in-out;\n  transition-property: color,background-color; }\n  .uk-offcanvas-content .ch-nav-link:hover, .ch-offcanvas-wrapper .ch-nav-link:hover {\n    color: #f76f63; }\n\n.uk-offcanvas-content .ch-sidebar-left, .ch-offcanvas-wrapper .ch-sidebar-left {\n  background: #333; }\n\n.uk-offcanvas-content .pin-counter, .ch-offcanvas-wrapper .pin-counter {\n  color: #f76f63;\n  font-weight: bold;\n  text-transform: uppercase; }\n\n.uk-offcanvas-content .ch-offcanvas-wrapper .uk-offcanvas-bar, .ch-offcanvas-wrapper .ch-offcanvas-wrapper .uk-offcanvas-bar {\n  width: 250px; }\n\n.ch-sidebar-left {\n  position: fixed;\n  top: 80px;\n  bottom: 0;\n  box-sizing: border-box;\n  width: 240px !important;\n  padding: 40px 40px 60px 40px;\n  border-right: 1px #e5e5e5 solid;\n  overflow: auto; }\n\n@media (min-width: 960px) {\n  .ch-sidebar-left + .ch-main {\n    padding-left: 240px; } }\n", ""]);
 
 // exports
 
