@@ -293,7 +293,7 @@ function loadInitialPlaces() {
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     var promiseChain = placesList.reduce(function(promise, place) {
       return promise.then(function(result) {
-        return Promise.all([delay(100), getPlacesForType(place.name)]);
+        return Promise.all([delay(500), getPlacesForType(place.name)]);
       })
     }, Promise.resolve())
 
@@ -399,7 +399,7 @@ function placesServiceCallback(results, status) {
 /* ------------------------------------------------------------------ */
 function createMapMarker(place) {
     var placeLoc = place.geometry.location;
-    //console.log(place);
+    console.log(place);
     var marker = new google.maps.Marker({
         map: map,
         //icon: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
@@ -411,12 +411,18 @@ function createMapMarker(place) {
     currentPlaceMarkers.push(marker);
     var infoWindowContent = document.createElement("div");
     infoWindowContent.style.maxWidth = infoWindowMaxWidth + 'px';
-    var infoWindowTitle = document.createElement("span");
+    var infoWindowTitle = document.createElement("div");
+    var infoWindowAddress = document.createElement("div");
+    infoWindowAddress.appendChild(document.createTextNode(place.vicinity));
+    infoWindowAddress.style.paddingBottom = "6px";
+    infoWindowAddress.style.color = "black";
     infoWindowTitle.appendChild(document.createTextNode(place.name));
     infoWindowTitle.style.display = "block";
     infoWindowTitle.style.fontWeight = "bold";
-    infoWindowTitle.style.paddingBottom = "5px";
+    infoWindowTitle.style.paddingBottom = "3px";
+    infoWindowTitle.style.color = "black";
     infoWindowContent.appendChild(infoWindowTitle);
+    infoWindowContent.appendChild(infoWindowAddress);
     /*
     if(place.photos != undefined) {
         var infoWindowImageContainer = document.createElement("div");

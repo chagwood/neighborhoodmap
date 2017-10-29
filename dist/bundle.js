@@ -393,7 +393,7 @@ function loadInitialPlaces() {
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     var promiseChain = placesList.reduce(function(promise, place) {
       return promise.then(function(result) {
-        return Promise.all([delay(100), getPlacesForType(place.name)]);
+        return Promise.all([delay(500), getPlacesForType(place.name)]);
       })
     }, Promise.resolve())
 
