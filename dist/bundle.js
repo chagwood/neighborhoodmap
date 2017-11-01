@@ -499,7 +499,7 @@ function placesServiceCallback(results, status) {
 /* ------------------------------------------------------------------ */
 function createMapMarker(place) {
     var placeLoc = place.geometry.location;
-    //console.log(place);
+    //console.log(placeLoc);
     var marker = new google.maps.Marker({
         map: map,
         //icon: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
@@ -513,6 +513,12 @@ function createMapMarker(place) {
     infoWindowContent.style.maxWidth = infoWindowMaxWidth + 'px';
     var infoWindowTitle = document.createElement("div");
     var infoWindowAddress = document.createElement("div");
+    var nearByPhotoLink = document.createElement("div");
+    nearByPhotoLink.className = "nearby-link";
+    nearByPhotoLink.innerHTML = '<a href="#nearby-overlay" uk-toggle>View Nearby Photo</a>';
+    nearByPhotoLink.style.paddingBottom = "6px";
+    nearByPhotoLink.style.fontWeight = "bold";
+    nearByPhotoLink.style.display = "hidden";
     infoWindowAddress.appendChild(document.createTextNode(place.vicinity));
     infoWindowAddress.style.paddingBottom = "6px";
     infoWindowAddress.style.color = "black";
@@ -523,6 +529,7 @@ function createMapMarker(place) {
     infoWindowTitle.style.color = "black";
     infoWindowContent.appendChild(infoWindowTitle);
     infoWindowContent.appendChild(infoWindowAddress);
+    infoWindowContent.appendChild(nearByPhotoLink);
     /*
     if(place.photos != undefined) {
         var infoWindowImageContainer = document.createElement("div");
@@ -549,10 +556,53 @@ function createMapMarker(place) {
 
     google.maps.event.addListener(marker, 'click', function() {
         resetMapMarkers();
+        getFlickrPhotoForLocation(placeLoc.lat, placeLoc.lng, nearByPhotoLink)
         infowindow.setContent(infoWindowContent);
         marker.setIcon(selectedMarkerIcon);
         infowindow.open(map, this);
     });
+}
+function getFlickrPhotoForLocation(latcoord, lngcoord, linkDomElement) {
+        var imageContainer = document.getElementById("nearby-photo");
+        var opts = {
+            method: 'flickr.photos.search',
+            api_key: '1f1c4d1df1b98a01781d4324b65ca59f',
+            extras: 'url_c',
+            accuracy: 16,
+            content_type: 1,
+            lat: latcoord,
+            lon: lngcoord,
+            per_page: 10,
+            radius: 1,
+            format: 'json',
+            nojsoncallback: 1
+        };
+        $.get('https://api.flickr.com/services/rest/', opts, function(resp){
+            if (resp.stat === "ok") {
+                var photoCount = resp.photos.photo.length;
+                if(photoCount >= 1) {
+                    var randomSelection = Math.floor(Math.random() * ((photoCount) - 0) + 0);
+                    //console.log("NUM SELECTED: " + randomSelection);
+                    var imageHTML = "";
+                    if(resp.photos.photo[randomSelection].url_c != undefined) {
+                        imageHTML = '<img src="' + resp.photos.photo[randomSelection].url_c + '"/>';
+                    } else {
+                        do {
+                            console.log("GOTTA FIND ANOTHER PHOTO!");
+                            randomSelection = Math.floor(Math.random() * ((photoCount) - 0) + 0)
+                        } while(resp.photos.photo[randomSelection].url_c != undefined)
+                        imageHTML = '<img src="' + resp.photos.photo[randomSelection].url_c + '"/>';
+                    }
+                    
+                    imageContainer.innerHTML = imageHTML;
+                    linkDomElement.style.display = "visible";
+                }
+            }
+            else {
+                //console.log('ERROR', resp);
+
+            }
+        });
 }
 /* ------------------------------------------------------------------ */
 /* If the markers from a place has been cached, display the markers stored in the item's array */
@@ -614,6 +664,10 @@ $(document).ready(function() {
     viewModel = new AppViewModel();
     ko.applyBindings(viewModel);
     loadLocalStorage();
+    document.getElementById("nearby-overlay").addEventListener("click",function(){
+        UIkit.modal("#nearby-overlay").hide();
+    })
+    //getFlickrPhotoForLocation("38.967510", "-77.317677")
 });
 /* ------------------------------------------------------------------ */
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))

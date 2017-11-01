@@ -467,7 +467,7 @@ function getFlickrPhotoForLocation(latcoord, lngcoord, linkDomElement) {
         var opts = {
             method: 'flickr.photos.search',
             api_key: '1f1c4d1df1b98a01781d4324b65ca59f',
-            extras: 'url_c',
+            extras: 'url_z',
             accuracy: 16,
             content_type: 1,
             lat: latcoord,
@@ -484,14 +484,14 @@ function getFlickrPhotoForLocation(latcoord, lngcoord, linkDomElement) {
                     var randomSelection = Math.floor(Math.random() * ((photoCount) - 0) + 0);
                     //console.log("NUM SELECTED: " + randomSelection);
                     var imageHTML = "";
-                    if(resp.photos.photo[randomSelection].url_c != undefined) {
-                        imageHTML = '<img src="' + resp.photos.photo[randomSelection].url_c + '"/>';
+                    if(resp.photos.photo[randomSelection].url_z != undefined) {
+                        imageHTML = '<img src="' + resp.photos.photo[randomSelection].url_z + '"/>';
                     } else {
                         do {
                             console.log("GOTTA FIND ANOTHER PHOTO!");
                             randomSelection = Math.floor(Math.random() * ((photoCount) - 0) + 0)
-                        } while(resp.photos.photo[randomSelection].url_c != undefined)
-                        imageHTML = '<img src="' + resp.photos.photo[randomSelection].url_c + '"/>';
+                        } while(resp.photos.photo[randomSelection].url_z != undefined)
+                        imageHTML = '<img src="' + resp.photos.photo[randomSelection].url_z + '"/>';
                     }
                     
                     imageContainer.innerHTML = imageHTML;
