@@ -511,12 +511,18 @@ function createMapMarker(place) {
     currentPlaceMarkers.push(marker);
     var infoWindowContent = document.createElement("div");
     infoWindowContent.style.maxWidth = infoWindowMaxWidth + 'px';
-    var infoWindowTitle = document.createElement("span");
+    var infoWindowTitle = document.createElement("div");
+    var infoWindowAddress = document.createElement("div");
+    infoWindowAddress.appendChild(document.createTextNode(place.vicinity));
+    infoWindowAddress.style.paddingBottom = "6px";
+    infoWindowAddress.style.color = "black";
     infoWindowTitle.appendChild(document.createTextNode(place.name));
     infoWindowTitle.style.display = "block";
     infoWindowTitle.style.fontWeight = "bold";
-    infoWindowTitle.style.paddingBottom = "5px";
+    infoWindowTitle.style.paddingBottom = "3px";
+    infoWindowTitle.style.color = "black";
     infoWindowContent.appendChild(infoWindowTitle);
+    infoWindowContent.appendChild(infoWindowAddress);
     /*
     if(place.photos != undefined) {
         var infoWindowImageContainer = document.createElement("div");
