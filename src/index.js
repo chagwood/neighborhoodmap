@@ -153,6 +153,9 @@ var placesList = [{
 function initMap() {
     map = new google.maps.Map(document.getElementById('map-container'), {
         center: mapCenter,
+        fullscreenControl: false,
+        streetViewControl: false,
+        mapTypeControl: false,
         zoom: 13,
         clickableIcons: false,
         styles: [{
@@ -561,11 +564,15 @@ function loadLocalStorage() {
 }
 /* ------------------------------------------------------------------ */
 $(document).ready(function() {
+    initMap();
     viewModel = new AppViewModel();
     ko.applyBindings(viewModel);
     loadLocalStorage();
     document.getElementById("nearby-overlay").addEventListener("click",function(){
         UIkit.modal("#nearby-overlay").hide();
+    });
+    document.getElementById("about-overlay").addEventListener("click",function(){
+        UIkit.modal("#about-overlay").hide();
     })
     //getFlickrPhotoForLocation("38.967510", "-77.317677")
 });
