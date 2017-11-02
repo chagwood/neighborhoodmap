@@ -14,6 +14,7 @@
 * Webpack
 * UIkit
 * Flickr Photos Search
+* localStorage
 
 # Installation
 
