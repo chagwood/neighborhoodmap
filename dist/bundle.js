@@ -358,7 +358,7 @@ function AppViewModel() {
     self.displayPlaces = function() {
         clearMapMarkers();
         selectedPlaceName = this.name;
-        if(placeMarkersData[selectedPlaceName] == undefined) {
+        if(placeMarkersData[selectedPlaceName] === undefined) {
             placesService.nearbySearch({
                 location: mapCenter,
                 radius: 5000,
@@ -375,20 +375,20 @@ function AppViewModel() {
     };
     self.reloadData = function() {
         reloadAllData();
-    }
+    };
 }
 /* ------------------------------------------------------------------ */
 function loadInitialPlaces() {
     //load the modal
-    UIkit.modal("#wait-overlay").show()
+    UIkit.modal("#wait-overlay").show();
 
     //delay is used so we don't get limit exceeded errors from google apis
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     var promiseChain = placesList.reduce(function(promise, place) {
       return promise.then(function(result) {
         return Promise.all([delay(500), getPlacesForType(place.name)]);
-      })
-    }, Promise.resolve())
+      });
+    }, Promise.resolve());
 
     promiseChain.then(function(result){
         //close the modal
@@ -419,11 +419,11 @@ function getPlacesForType(type) {
                     //console.log(results);
                     for(var x = 0; x < results[i].types.length; x++){
                         currentPlaceType = results[i].types[x];
-                        if(placeMarkersData[currentPlaceType] == undefined) {
-                            placeMarkersData[currentPlaceType] = new Array();
+                        if(placeMarkersData[currentPlaceType] === undefined) {
+                            placeMarkersData[currentPlaceType] = [];
                         }
                         placeMarkersData[currentPlaceType].push(results[i]);
-                        if(uniquePlaceMarkerIDs[results[i].id] == undefined) {
+                        if(uniquePlaceMarkerIDs[results[i].id] === undefined) {
                             createMapMarker(results[i]);
                             uniquePlaceMarkerIDs[results[i].id] = results[i].id;
                             viewModel.incrementPinCounter();
@@ -448,14 +448,14 @@ function placesServiceCallback(results, status) {
     //console.log(results);
     //console.log(status);
     if (status === google.maps.places.PlacesServiceStatus.OK) {
-        if(selectedPlaceName != "") {
-            if(placeMarkersData[selectedPlaceName] == undefined) {
-                placeMarkersData[selectedPlaceName] = new Array();
+        if(selectedPlaceName !== "") {
+            if(placeMarkersData[selectedPlaceName] === undefined) {
+                placeMarkersData[selectedPlaceName] = [];
             }
         }
 
         for (var i = 0; i < results.length; i++) {
-            if(selectedPlaceName != "") {
+            if(selectedPlaceName !== "") {
                 placeMarkersData[selectedPlaceName].push(results[i]);
             }
             createMapMarker(results[i]);
@@ -504,12 +504,12 @@ function createMapMarker(place) {
     var infoWindowImage = new Image();
     infoWindowImage.src = 'https://maps.googleapis.com/maps/api/streetview?size=' + infoWindowMaxWidth + 'x' + infoWindowImageHeight + '&location=' + place.vicinity + '&fov=90&key=AIzaSyA-ukoWUS6t1TVxoXi3SP_VfFTj9IRLQ78';
     infoWindowImage.style.width = "100%";
-    infoWindowImageContainer.appendChild(infoWindowImage)
+    infoWindowImageContainer.appendChild(infoWindowImage);
     infoWindowContent.appendChild(infoWindowImageContainer);
 
     google.maps.event.addListener(marker, 'click', function() {
         resetMapMarkers();
-        getFlickrPhotoForLocation(placeLoc.lat, placeLoc.lng, nearByPhotoLink)
+        getFlickrPhotoForLocation(placeLoc.lat, placeLoc.lng, nearByPhotoLink);
         infowindow.setContent(infoWindowContent);
         marker.setIcon(selectedMarkerIcon);
         infowindow.open(map, this);
@@ -537,13 +537,13 @@ function getFlickrPhotoForLocation(latcoord, lngcoord, linkDomElement) {
                     var randomSelection = Math.floor(Math.random() * ((photoCount) - 0) + 0);
                     //console.log("NUM SELECTED: " + randomSelection);
                     var imageHTML = "";
-                    if(resp.photos.photo[randomSelection].url_z != undefined) {
+                    if(resp.photos.photo[randomSelection].url_z !== undefined) {
                         imageHTML = '<img src="' + resp.photos.photo[randomSelection].url_z + '"/>';
                     } else {
                         do {
                             console.log("GOTTA FIND ANOTHER PHOTO!");
-                            randomSelection = Math.floor(Math.random() * ((photoCount) - 0) + 0)
-                        } while(resp.photos.photo[randomSelection].url_z != undefined)
+                            randomSelection = Math.floor(Math.random() * ((photoCount) - 0) + 0);
+                        } while(resp.photos.photo[randomSelection].url_z !== undefined);
                         imageHTML = '<img src="' + resp.photos.photo[randomSelection].url_z + '"/>';
                     }
                     
@@ -585,7 +585,7 @@ function displayAllMakers() {
     viewModel.resetPinCounter();
     for(var placeCategory in placeMarkersData) {
         for(var placePin in placeMarkersData[placeCategory]) {
-            if(uniquePlaceMarkerIDs[placeMarkersData[placeCategory][placePin].id] == undefined) {
+            if(uniquePlaceMarkerIDs[placeMarkersData[placeCategory][placePin].id] === undefined) {
                 createMapMarker(placeMarkersData[placeCategory][placePin]);
                 uniquePlaceMarkerIDs[placeMarkersData[placeCategory][placePin].id] = placeMarkersData[placeCategory][placePin].id;
                 viewModel.incrementPinCounter();
@@ -623,7 +623,7 @@ $(document).ready(function() {
     });
     document.getElementById("about-overlay").addEventListener("click",function(){
         UIkit.modal("#about-overlay").hide();
-    })
+    });
 });
 /* ------------------------------------------------------------------ */
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
