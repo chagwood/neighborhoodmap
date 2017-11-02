@@ -223,16 +223,6 @@ function initMap() {
     infowindow = new google.maps.InfoWindow();
     placesService = new google.maps.places.PlacesService(map);
     google.maps.event.trigger(map, 'resize');
-    
-    /* adjust the height of the map container */
-    /*
-    var topNav = document.getElementById("top-navbar");
-    var mapContainer = document.getElementById('map-container');
-    var tapNavHeight = topNav.clientHeight;
-    var mapContainerHeight = mapContainer.clientHeight;
-    var adjustedHeight = mapContainerHeight-tapNavHeight;    
-    //mapContainer.style.height = adjustedHeight + "px";
-    */
 
     google.maps.event.addListener(map, "click", function(event) {
         infowindow.close();
@@ -313,33 +303,6 @@ function loadInitialPlaces() {
             UIkit.modal("#notice-overlay").show();
         }
     });
-
-    /*
-    var promiseArray = [];
-    for(var p = 0; p < placesList.length; p++) {
-        promiseArray.push(getPlacesForType(placesList[p].name))
-        //
-        placesService.nearbySearch({
-            location: mapCenter,
-            radius: 5000,
-            type: placesList[p].name
-        }, function(results, status){
-            var currentPlaceType = "";
-            console.log("RESULTS: " + results.length);
-            for(var i = 0; i < results.length; i++) {
-                for(var x = 0; x < results[i].types.length; x++){
-                    currentPlaceType = results[i].types[x];
-                    if(placeMarkersData[currentPlaceType] == undefined) {
-                        placeMarkersData[currentPlaceType] = new Array();
-                    }
-                    placeMarkersData[currentPlaceType].push(results[i]);
-                    createMapMarker(results[i]);
-                }
-            }
-        });
-        //
-    }
-    */
 }
 /* ------------------------------------------------------------------ */
 function getPlacesForType(type) {
@@ -433,19 +396,6 @@ function createMapMarker(place) {
     infoWindowContent.appendChild(infoWindowTitle);
     infoWindowContent.appendChild(infoWindowAddress);
     infoWindowContent.appendChild(nearByPhotoLink);
-    /*
-    if(place.photos != undefined) {
-        var infoWindowImageContainer = document.createElement("div");
-        infoWindowImageContainer.style.overflow = "hidden";
-        infoWindowImageContainer.style.width = "100%";
-        infoWindowImageContainer.style.maxHeight = "100px";
-        var infoWindowImage = new Image();
-        infoWindowImage.src = place.photos[0].getUrl({'maxWidth': 150, 'maxHeight': 150});
-        infoWindowImage.style.width = "100%";
-        infoWindowImageContainer.appendChild(infoWindowImage)
-        infoWindowContent.appendChild(infoWindowImageContainer);
-    }*/
-
 
     var infoWindowImageContainer = document.createElement("div");
     infoWindowImageContainer.style.overflow = "hidden";
@@ -502,8 +452,8 @@ function getFlickrPhotoForLocation(latcoord, lngcoord, linkDomElement) {
                 }
             }
             else {
-                //console.log('ERROR', resp);
-
+                viewModel.changeNoticeMessage(resp);
+                UIkit.modal("#notice-overlay").show();
             }
         });
 }
@@ -574,6 +524,5 @@ $(document).ready(function() {
     document.getElementById("about-overlay").addEventListener("click",function(){
         UIkit.modal("#about-overlay").hide();
     })
-    //getFlickrPhotoForLocation("38.967510", "-77.317677")
 });
 /* ------------------------------------------------------------------ */
