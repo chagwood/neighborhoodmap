@@ -12,8 +12,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.30/js/uikit.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.30/js/uikit-icons.min.js" defer></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-ukoWUS6t1TVxoXi3SP_VfFTj9IRLQ78&libraries=places"></script>
     <script src="bundle.js"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-ukoWUS6t1TVxoXi3SP_VfFTj9IRLQ78&libraries=places&callback=startApp" onerror="loadingError()"></script>
+    
 </head>
 
 <body>
@@ -44,7 +45,9 @@
     <div id="nearby-overlay" class="uk-modal-full" uk-modal>
             <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
         <div class="uk-modal-dialog uk-margin-auto-vertical" style="text-align: center;">
-                <div id="nearby-photo"></div>
+                <div id="nearby-photo">
+                    <img data-bind="attr:{src: relatedImgSrc}"/>
+                </div>
         </div>
     </div>
     <div class="uk-offcanvas-content">
@@ -69,7 +72,7 @@
                 <li class=""><a class="ch-nav-link" href="#" data-bind="click: reloadData">Refresh Data</a></li>
             </ul>
             <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
-                <li class="ch-nav-heading">PLACES</li>
+                <li class="ch-nav-heading">CATEGORIES <span class="uk-badge" data-bind="text: categoryCount">0</span></li>
             </ul>
             <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" data-bind="foreach: places" style="margin-top: 0px !important">
                 <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayPlaces"></a></li>
@@ -91,7 +94,7 @@
                     <li class=""><a class="ch-nav-link" href="#" data-bind="click: reloadData">Refresh Data</a></li>
                 </ul>
                 <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
-                    <li class="ch-nav-heading">PLACES</li>
+                    <li class="ch-nav-heading">CATEGORIES <span class="uk-badge" data-bind="text: categoryCount">0</span></li>
                 </ul>
                 <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" data-bind="foreach: places" style="margin-top: 0px !important">
                     <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayPlaces"></a></li>

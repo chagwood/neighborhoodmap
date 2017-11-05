@@ -233,15 +233,16 @@ function initMap() {
         resetMapMarkers();
      });
 } //end of initMap
-window.initMap = initMap; //must set this to window or initial initMap callback doesn't work
 /* ------------------------------------------------------------------ */
 function AppViewModel() {
     var self = this;
     self.categoriesLoaded = ko.observable(0);
     self.pinsDisplayed = ko.observable(0);
     self.notificationText = ko.observable("");
+    self.relatedImgSrc = ko.observable("");
     self.totalCategories = placesList.length;
     self.places = ko.observableArray(placesList);
+    self.categoryCount = ko.observable(placesList.length);
     self.incrementLoadCounter = function() {
         this.categoriesLoaded(this.categoriesLoaded() + 1);
     };
@@ -251,9 +252,14 @@ function AppViewModel() {
     self.resetPinCounter = function() {
         this.pinsDisplayed(0);
     };
-    self.changeNoticeMessage = function(noticeText) {
+    self.displayNotice = function(noticeText) {
         this.notificationText(noticeText);
+        UIkit.modal("#notice-overlay").show();
     };
+    self.displayRelatedImage = function(imageUrl) {
+        this.relatedImgSrc(imageUrl);
+
+    }
 
     self.displayPlaces = function() {
         clearMapMarkers();
@@ -296,11 +302,9 @@ function loadInitialPlaces() {
         //drop all the pins...
     }).catch(function(result){
         if(result == "OVER_QUERY_LIMIT") {
-            viewModel.changeNoticeMessage("Async calls were throttled. Try refreshing data again.");
-            UIkit.modal("#notice-overlay").show();
+            viewModel.displayNotice("Async calls were throttled. Try refreshing data again.");
         } else {
-            viewModel.changeNoticeMessage(result);
-            UIkit.modal("#notice-overlay").show();
+            viewModel.displayNotice(result);
         }
     });
 }
@@ -318,14 +322,19 @@ function getPlacesForType(type) {
                 for(var i = 0; i < results.length; i++) {
                     //console.log(results);
                     for(var x = 0; x < results[i].types.length; x++){
+                        var placeObj = {};
                         currentPlaceType = results[i].types[x];
                         if(placeMarkersData[currentPlaceType] === undefined) {
                             placeMarkersData[currentPlaceType] = [];
                         }
-                        placeMarkersData[currentPlaceType].push(results[i]);
-                        if(uniquePlaceMarkerIDs[results[i].id] === undefined) {
-                            createMapMarker(results[i]);
-                            uniquePlaceMarkerIDs[results[i].id] = results[i].id;
+                        placeObj.place = results[i];
+                        placeObj.nearByImg = null;
+                        placeObj.id = results[i].id;
+                        getFlickrPhotoForLocation(placeObj.place.geometry.location.lat, placeObj.place.geometry.location.lng, placeObj)
+                        placeMarkersData[currentPlaceType].push(placeObj);
+                        if(uniquePlaceMarkerIDs[placeObj.id] === undefined) {
+                            createMapMarker(placeObj);
+                            uniquePlaceMarkerIDs[placeObj.id] = placeObj.id;
                             viewModel.incrementPinCounter();
                         }
                         
@@ -363,7 +372,8 @@ function placesServiceCallback(results, status) {
     }
 }
 /* ------------------------------------------------------------------ */
-function createMapMarker(place) {
+function createMapMarker(placeObj) {
+    var place = placeObj.place;
     var placeLoc = place.geometry.location;
     //console.log(placeLoc);
     var marker = new google.maps.Marker({
@@ -375,48 +385,31 @@ function createMapMarker(place) {
     });
 
     currentPlaceMarkers.push(marker);
-    var infoWindowContent = document.createElement("div");
-    infoWindowContent.style.maxWidth = infoWindowMaxWidth + 'px';
-    var infoWindowTitle = document.createElement("div");
-    var infoWindowAddress = document.createElement("div");
-    var nearByPhotoLink = document.createElement("div");
-    nearByPhotoLink.className = "nearby-link";
-    nearByPhotoLink.innerHTML = '<a href="#nearby-overlay" uk-toggle>View Nearby Photo</a>';
-    nearByPhotoLink.style.paddingBottom = "6px";
-    nearByPhotoLink.style.fontWeight = "bold";
-    nearByPhotoLink.style.display = "hidden";
-    infoWindowAddress.appendChild(document.createTextNode(place.vicinity));
-    infoWindowAddress.style.paddingBottom = "6px";
-    infoWindowAddress.style.color = "black";
-    infoWindowTitle.appendChild(document.createTextNode(place.name));
-    infoWindowTitle.style.display = "block";
-    infoWindowTitle.style.fontWeight = "bold";
-    infoWindowTitle.style.paddingBottom = "3px";
-    infoWindowTitle.style.color = "black";
-    infoWindowContent.appendChild(infoWindowTitle);
-    infoWindowContent.appendChild(infoWindowAddress);
-    infoWindowContent.appendChild(nearByPhotoLink);
 
-    var infoWindowImageContainer = document.createElement("div");
-    infoWindowImageContainer.style.overflow = "hidden";
-    infoWindowImageContainer.style.width = "100%";
-    infoWindowImageContainer.style.maxHeight = infoWindowImageHeight + "px";
-    var infoWindowImage = new Image();
-    infoWindowImage.src = 'https://maps.googleapis.com/maps/api/streetview?size=' + infoWindowMaxWidth + 'x' + infoWindowImageHeight + '&location=' + place.vicinity + '&fov=90&key=AIzaSyA-ukoWUS6t1TVxoXi3SP_VfFTj9IRLQ78';
-    infoWindowImage.style.width = "100%";
-    infoWindowImageContainer.appendChild(infoWindowImage);
-    infoWindowContent.appendChild(infoWindowImageContainer);
+    //var flickrImgSrc = getFlickrPhotoForLocation(placeLoc.lat, placeLoc.lng);
+
+    var infoWindowContent = `<div class="infowindow" style="max-width: ${infoWindowMaxWidth}px">
+                                <div style="padding-bottom: 3px; font-weight: bold; color: black">${place.name}</div>
+                                <div style="padding-bottom: 6px; color: black">${place.vicinity}</div>
+                                <div class="nearby-link" style="padding-bottom: 6px; font-weight: bold;">
+                                    <a href="#nearby-overlay" uk-toggle>View Nearby Photo</a>
+                                </div>
+                                <div style="overflow: hidden; max-height: ${infoWindowImageHeight}px; height: ${infoWindowImageHeight}px; width:${infoWindowMaxWidth}px;">
+                                    <img style="width:100%" src="https://maps.googleapis.com/maps/api/streetview?size=${infoWindowMaxWidth}x${infoWindowImageHeight}&location=${place.vicinity}&fov=90&key=AIzaSyA-ukoWUS6t1TVxoXi3SP_VfFTj9IRLQ78"/>
+                                </div>
+                            </div>`;
 
     google.maps.event.addListener(marker, 'click', function() {
         resetMapMarkers();
-        getFlickrPhotoForLocation(placeLoc.lat, placeLoc.lng, nearByPhotoLink);
+        viewModel.displayRelatedImage(placeObj.nearByImg);
         infowindow.setContent(infoWindowContent);
         marker.setIcon(selectedMarkerIcon);
+        map.panTo(marker.getPosition());
         infowindow.open(map, this);
+        //console.log(this);
     });
 }
-function getFlickrPhotoForLocation(latcoord, lngcoord, linkDomElement) {
-        var imageContainer = document.getElementById("nearby-photo");
+function getFlickrPhotoForLocation(latcoord, lngcoord, currentItem) {
         var opts = {
             method: 'flickr.photos.search',
             api_key: '1f1c4d1df1b98a01781d4324b65ca59f',
@@ -435,27 +428,27 @@ function getFlickrPhotoForLocation(latcoord, lngcoord, linkDomElement) {
                 var photoCount = resp.photos.photo.length;
                 if(photoCount >= 1) {
                     var randomSelection = Math.floor(Math.random() * ((photoCount) - 0) + 0);
-                    //console.log("NUM SELECTED: " + randomSelection);
-                    var imageHTML = "";
                     if(resp.photos.photo[randomSelection].url_z !== undefined) {
-                        imageHTML = '<img src="' + resp.photos.photo[randomSelection].url_z + '"/>';
+                        currentItem.nearByImg = resp.photos.photo[randomSelection].url_z;
                     } else {
                         do {
-                            console.log("GOTTA FIND ANOTHER PHOTO!");
                             randomSelection = Math.floor(Math.random() * ((photoCount) - 0) + 0);
                         } while(resp.photos.photo[randomSelection].url_z !== undefined);
-                        imageHTML = '<img src="' + resp.photos.photo[randomSelection].url_z + '"/>';
+                        currentItem.nearByImg = resp.photos.photo[randomSelection].url_z;
                     }
-                    
-                    imageContainer.innerHTML = imageHTML;
-                    linkDomElement.style.display = "visible";
                 }
             }
             else {
-                viewModel.changeNoticeMessage(resp);
-                UIkit.modal("#notice-overlay").show();
+                //show error
+                viewModel.displayNotice(resp);
             }
+        }).fail(function() {
+            viewModel.displayNotice("An error occured while calling the Flickr API for a location's nearby photo. Some images may be unavailable.");
         });
+}
+/* ------------------------------------------------------------------ */
+function loadingError() {
+    viewModel.displayNotice("There was an error loading the Google Maps API. App cannot continue.");
 }
 /* ------------------------------------------------------------------ */
 /* If the markers from a place has been cached, display the markers stored in the item's array */
@@ -513,16 +506,19 @@ function loadLocalStorage() {
     }
 }
 /* ------------------------------------------------------------------ */
-$(document).ready(function() {
+function startApp() {
     initMap();
     viewModel = new AppViewModel();
     ko.applyBindings(viewModel);
     loadLocalStorage();
+    
     document.getElementById("nearby-overlay").addEventListener("click",function(){
         UIkit.modal("#nearby-overlay").hide();
     });
+    
     document.getElementById("about-overlay").addEventListener("click",function(){
         UIkit.modal("#about-overlay").hide();
     });
-});
+}
+window.startApp = startApp; //must set this to window or initial initMap callback doesn't work
 /* ------------------------------------------------------------------ */
