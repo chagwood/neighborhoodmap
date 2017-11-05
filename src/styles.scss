@@ -22,6 +22,14 @@ $accent-color: #f76f63;
     color: #fff;
 }
 
+.uk-accordion-title, .uk-accordion-title::after {
+    color: #fff;
+}
+
+.uk-accordion-content {
+    margin-top: 10px;
+}
+
 .about-text {
     margin-top: 5px;
     margin-bottom: 5px; 
@@ -114,8 +122,8 @@ $accent-color: #f76f63;
   top: 80px;
   bottom: 0;
   box-sizing: border-box;
-  width: 240px !important;
-  padding: 40px 40px 60px 40px;
+  width: 260px !important;
+  padding: 40px 20px;
   border-right: 1px #e5e5e5 solid;
   overflow: auto;
 }
@@ -123,6 +131,6 @@ $accent-color: #f76f63;
 
 @media (min-width: 960px) {
     .ch-sidebar-left+.ch-main {
-        padding-left: 240px;
+        padding-left: 260px;
     }
 }

@@ -66,17 +66,33 @@
         </div>
         <div class="ch-sidebar-left uk-visible@m">
             <div class="pin-counter"><span data-bind="text: pinsDisplayed">0</span> pins shown</div>
-            <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
-                <li class="ch-nav-heading">ACTIONS</li>
-                <li class=""><a class="ch-nav-link" href="#" data-bind="click: resetMap">Reset Filters</a></li>
-                <li class=""><a class="ch-nav-link" href="#" data-bind="click: reloadData">Refresh Data</a></li>
-            </ul>
-            <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
-                <li class="ch-nav-heading">CATEGORIES <span class="uk-badge" data-bind="text: categoryCount">0</span></li>
-            </ul>
-            <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" data-bind="foreach: places" style="margin-top: 0px !important">
-                <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayPlaces"></a></li>
-            </ul>
+            <ul uk-accordion>
+                    <li>
+                        <h4 class="uk-accordion-title">ACTIONS</h4>
+                        <div class="uk-accordion-content">
+                                <ul class="uk-nav uk-nav-default tm-nav">
+                                        <li class=""><a class="ch-nav-link" href="#" data-bind="click: resetMap">Reset Filters</a></li>
+                                        <li class=""><a class="ch-nav-link" href="#" data-bind="click: reloadData">Refresh Data</a></li>
+                                </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <h4 class="uk-accordion-title">CATEGORIES</h4>
+                        <div class="uk-accordion-content">
+                                <ul class="uk-nav uk-nav-default tm-nav" data-bind="foreach: categories" style="margin-top: 0px !important">
+                                    <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayCategory"></a></li>
+                                </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <h4 class="uk-accordion-title">PLACES</h4>
+                        <div class="uk-accordion-content">
+                                <ul class="uk-nav uk-nav-default tm-nav" data-bind="foreach: places" style="margin-top: 0px !important">
+                                    <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayPlace"></a></li>
+                                </ul>
+                        </div>
+                    </li>
+                </ul>
 		</div>
         <div class="ch-main">
             <div class="">
@@ -88,16 +104,32 @@
         <div id="ch-offcanvas" class="ch-offcanvas-wrapper" uk-offcanvas="overlay: true; mode: push">
             <div class="uk-offcanvas-bar"> 
                 <div class="pin-counter"><span data-bind="text: pinsDisplayed">0</span> pins shown</div>
-                <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
-                    <li class="ch-nav-heading">ACTIONS</li>
-                    <li class=""><a class="ch-nav-link" href="#" data-bind="click: resetMap">Reset Filters</a></li>
-                    <li class=""><a class="ch-nav-link" href="#" data-bind="click: reloadData">Refresh Data</a></li>
-                </ul>
-                <ul class="uk-nav uk-nav-default tm-nav uk-margin-top">
-                    <li class="ch-nav-heading">CATEGORIES <span class="uk-badge" data-bind="text: categoryCount">0</span></li>
-                </ul>
-                <ul class="uk-nav uk-nav-default tm-nav uk-margin-top" data-bind="foreach: places" style="margin-top: 0px !important">
-                    <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayPlaces"></a></li>
+                <ul uk-accordion>
+                    <li>
+                        <h4 class="uk-accordion-title">ACTIONS</h4>
+                        <div class="uk-accordion-content">
+                                <ul class="uk-nav uk-nav-default tm-nav">
+                                        <li class=""><a class="ch-nav-link" href="#" data-bind="click: resetMap">Reset Filters</a></li>
+                                        <li class=""><a class="ch-nav-link" href="#" data-bind="click: reloadData">Refresh Data</a></li>
+                                </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <h4 class="uk-accordion-title">CATEGORIES</h4>
+                        <div class="uk-accordion-content">
+                                <ul class="uk-nav uk-nav-default tm-nav" data-bind="foreach: categories" style="margin-top: 0px !important">
+                                    <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayCategory"></a></li>
+                                </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <h4 class="uk-accordion-title">PLACES</h4>
+                        <div class="uk-accordion-content">
+                                <ul class="uk-nav uk-nav-default tm-nav" data-bind="foreach: places" style="margin-top: 0px !important">
+                                    <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayPlaces"></a></li>
+                                </ul>
+                        </div>
+                    </li>
                 </ul>
 			</div>
         </div>

@@ -7,6 +7,7 @@ var mapCenter = {lat: 38.958292, lng: -77.360039}; //initial map center and cent
 var currentPlaceMarkers = []; //array of map markers that are displayed at any given time
 var uniquePlaceMarkerIDs = {};
 var placeMarkersData = {}; //object to cache info for a selected place
+var placeNameData = [];
 var selectedPlaceName = ""; //currently selected place name
 var infoWindowMaxWidth = "200";
 var infoWindowImageHeight = "125";
@@ -241,7 +242,8 @@ function AppViewModel() {
     self.notificationText = ko.observable("");
     self.relatedImgSrc = ko.observable("");
     self.totalCategories = placesList.length;
-    self.places = ko.observableArray(placesList);
+    self.categories = ko.observableArray(placesList);
+    self.places = ko.observableArray(placeNameData);
     self.categoryCount = ko.observable(placesList.length);
     self.incrementLoadCounter = function() {
         this.categoriesLoaded(this.categoriesLoaded() + 1);
@@ -258,10 +260,11 @@ function AppViewModel() {
     };
     self.displayRelatedImage = function(imageUrl) {
         this.relatedImgSrc(imageUrl);
-
-    }
-
-    self.displayPlaces = function() {
+    };
+    self.displayPlace = function() {
+        displayPlaceMarker(this.place);
+    };
+    self.displayCategory = function() {
         clearMapMarkers();
         selectedPlaceName = this.name;
         if(placeMarkersData[selectedPlaceName] === undefined) {
@@ -271,7 +274,7 @@ function AppViewModel() {
                 type: this.name
             }, placesServiceCallback);
         } else {
-            displayMapMarkers(this.name);
+            displayCategoryMarkers(this.name);
         }
         //console.log("Display places for [" + this.name + "]");
     };
@@ -335,12 +338,14 @@ function getPlacesForType(type) {
                         if(uniquePlaceMarkerIDs[placeObj.id] === undefined) {
                             createMapMarker(placeObj);
                             uniquePlaceMarkerIDs[placeObj.id] = placeObj.id;
+                            viewModel.places.push({label: placeObj.place.name, id: placeObj.id, place: placeObj});
                             viewModel.incrementPinCounter();
                         }
                         
                     }
                 }
                 localStorage.setItem('mapPlaces', JSON.stringify(placeMarkersData));
+                localStorage.setItem('placeNames', JSON.stringify(placeNameData));
                 //increment counter in modal
                 viewModel.incrementLoadCounter();
                 resolve(results);
@@ -383,6 +388,7 @@ function createMapMarker(placeObj) {
         //animation: google.maps.Animation.DROP,
         position: place.geometry.location
     });
+    marker.placeId = placeObj.id;
 
     currentPlaceMarkers.push(marker);
 
@@ -452,11 +458,33 @@ function loadingError() {
 }
 /* ------------------------------------------------------------------ */
 /* If the markers from a place has been cached, display the markers stored in the item's array */
-function displayMapMarkers(name) {
+function displayCategoryMarkers(name) {
     viewModel.resetPinCounter();
     for(var i = 0; i < placeMarkersData[name].length; i++) {
         createMapMarker(placeMarkersData[name][i]);
         viewModel.incrementPinCounter();
+    }
+}
+
+function displayPlaceMarker(place) {
+    var isCurrentlyShown = false;
+    var foundIndex = 0;
+    for(var i =0; i < currentPlaceMarkers.length; i++) {
+        if(currentPlaceMarkers[i].placeId == place.id) {
+            isCurrentlyShown = true;
+            foundIndex = i;
+            break;
+        }
+    }
+
+    if(isCurrentlyShown) {
+        google.maps.event.trigger(currentPlaceMarkers[i], 'click');
+    } else {
+        viewModel.resetPinCounter();
+        clearMapMarkers();
+        createMapMarker(place);
+        viewModel.incrementPinCounter();
+        google.maps.event.trigger(currentPlaceMarkers[0], 'click');
     }
 }
 /* ------------------------------------------------------------------ */
@@ -465,6 +493,7 @@ function clearMapMarkers() {
     for(var i =0; i < currentPlaceMarkers.length; i++) {
         currentPlaceMarkers[i].setMap(null);
     }
+    currentPlaceMarkers = [];
 }
 /* ------------------------------------------------------------------ */
 function resetMapMarkers() {
@@ -497,21 +526,28 @@ function reloadAllData() {
 }
 /* ------------------------------------------------------------------ */
 function loadLocalStorage() {
-    if(localStorage.getItem('mapPlaces') === null) {
-        loadInitialPlaces();
-    } else {
+    if((localStorage.getItem('mapPlaces') !== null) && (localStorage.getItem('placeNames') !== null)) {
         placeMarkersData = JSON.parse(localStorage.getItem('mapPlaces'));
+        placeNameData = JSON.parse(localStorage.getItem('placeNames'));
+    }
+}
+/* ------------------------------------------------------------------ */
+function startMapActions() {
+    if((localStorage.getItem('mapPlaces') !== null) && (localStorage.getItem('placeNames') !== null)) {
         clearMapMarkers();
         displayAllMakers();
+    } else {
+        loadInitialPlaces();
     }
 }
 /* ------------------------------------------------------------------ */
 function startApp() {
     initMap();
+    loadLocalStorage();
     viewModel = new AppViewModel();
     ko.applyBindings(viewModel);
-    loadLocalStorage();
-    
+    startMapActions();
+
     document.getElementById("nearby-overlay").addEventListener("click",function(){
         UIkit.modal("#nearby-overlay").hide();
     });
