@@ -109,12 +109,10 @@ var currentPlaceMarkers = []; //array of map markers that are displayed at any g
 var uniquePlaceMarkerIDs = {};
 var placeMarkersData = {}; //object to cache info for a selected place
 var placeNameData = [];
-var selectedPlaceName = ""; //currently selected place name
 var infoWindowMaxWidth = "200";
 var infoWindowImageHeight = "125";
 var defaultMarkerIcon = "//maps.google.com/mapfiles/ms/icons/red-pushpin.png";
 var selectedMarkerIcon = "//maps.google.com/mapfiles/ms/icons/ylw-pushpin.png";
-var warningText = "";
 var viewModel;
 /* ------------------------------------------------------------------ */
 /* name attribute is used in Google Places; label for navigation */
@@ -338,6 +336,7 @@ function initMap() {
 /* ------------------------------------------------------------------ */
 function AppViewModel() {
     var self = this;
+    self.selectedCategoryName = ko.observable("");
     self.categoriesLoaded = ko.observable(0);
     self.pinsDisplayed = ko.observable(0);
     self.notificationText = ko.observable("");
@@ -346,6 +345,22 @@ function AppViewModel() {
     self.categories = ko.observableArray(placesList);
     self.places = ko.observableArray(placeNameData);
     self.categoryCount = ko.observable(placesList.length);
+    self.filterNames = ko.computed(function() {
+        var filter = this.selectedCategoryName().toLowerCase();
+        if (!filter) {
+            return this.places();
+        } else {
+            return ko.utils.arrayFilter(this.places(), function(theplace) {
+                if(theplace.place.place.types.indexOf(filter) >= 0) {
+                    return true;
+                }
+                return false;
+            });
+        }
+    }, this);
+    self.setCategoryFilter = function(categoryName) {
+        this.selectedCategoryName(categoryName);
+    };
     self.incrementLoadCounter = function() {
         this.categoriesLoaded(this.categoriesLoaded() + 1);
     };
@@ -367,8 +382,9 @@ function AppViewModel() {
     };
     self.displayCategory = function() {
         clearMapMarkers();
-        selectedPlaceName = this.name;
-        if(placeMarkersData[selectedPlaceName] === undefined) {
+        viewModel.setCategoryFilter(this.name);
+        //selectedPlaceName = this.name;
+        if(placeMarkersData[viewModel.selectedCategoryName()] === undefined) {
             placesService.nearbySearch({
                 location: mapCenter,
                 radius: 5000,
@@ -381,9 +397,11 @@ function AppViewModel() {
     };
     self.resetMap = function() {
         clearMapMarkers();
+        this.selectedCategoryName("");
         displayAllMakers();
     };
     self.reloadData = function() {
+        this.selectedCategoryName("");
         reloadAllData();
     };
     self.recenterMap = function() {
@@ -467,15 +485,15 @@ function placesServiceCallback(results, status) {
     //console.log(results);
     //console.log(status);
     if (status === google.maps.places.PlacesServiceStatus.OK) {
-        if(selectedPlaceName !== "") {
-            if(placeMarkersData[selectedPlaceName] === undefined) {
-                placeMarkersData[selectedPlaceName] = [];
+        if(viewModel.selectedCategoryName() !== "") {
+            if(placeMarkersData[viewModel.selectedCategoryName()] === undefined) {
+                placeMarkersData[viewModel.selectedCategoryName()] = [];
             }
         }
 
         for (var i = 0; i < results.length; i++) {
-            if(selectedPlaceName !== "") {
-                placeMarkersData[selectedPlaceName].push(results[i]);
+            if(viewModel.selectedCategoryName() !== "") {
+                placeMarkersData[viewModel.selectedCategoryName()].push(results[i]);
             }
             createMapMarker(results[i]);
         }
@@ -559,8 +577,9 @@ function getFlickrPhotoForLocation(latcoord, lngcoord, currentItem) {
 }
 /* ------------------------------------------------------------------ */
 function loadingError() {
-    viewModel.displayNotice("There was an error loading the Google Maps API. App cannot continue.");
+    UIkit.notification("There was an error loading the Google Maps API. App cannot continue.", {timeout: 10000});
 }
+window.loadingError = loadingError; //must set this to window or callback doesn't work
 /* ------------------------------------------------------------------ */
 /* If the markers from a place has been cached, display the markers stored in the item's array */
 function displayCategoryMarkers(name) {
@@ -661,7 +680,7 @@ function startApp() {
         UIkit.modal("#about-overlay").hide();
     });
 }
-window.startApp = startApp; //must set this to window or initial initMap callback doesn't work
+window.startApp = startApp; //must set this to window or callback doesn't work
 /* ------------------------------------------------------------------ */
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
 
@@ -10979,7 +10998,7 @@ exports = module.exports = __webpack_require__(7)(undefined);
 
 
 // module
-exports.push([module.i, ".uk-modal-full {\n  background: rgba(0, 0, 0, 0.75); }\n\n.uk-modal-dialog {\n  background-color: transparent;\n  color: white; }\n\n.loading-text, .notice-text {\n  margin-top: 10px;\n  margin-bottom: 10px;\n  color: #fff; }\n\n.notice-message {\n  margin-top: 10px;\n  margin-bottom: 20px;\n  color: #fff; }\n\n.uk-accordion-title, .uk-accordion-title::after {\n  color: #fff; }\n\n.uk-accordion-content {\n  margin-top: 10px; }\n\n.about-text {\n  margin-top: 5px;\n  margin-bottom: 5px;\n  color: #fff; }\n\n.accent-text {\n  color: #f76f63; }\n\n.uk-badge {\n  margin-left: 2px;\n  margin-top: -5px; }\n\n.uk-offcanvas-content #map-container, .ch-offcanvas-wrapper #map-container {\n  height: calc(100vh - 80px); }\n\n.uk-offcanvas-content .uk-navbar-container, .ch-offcanvas-wrapper .uk-navbar-container {\n  /* background: linear-gradient(to left, #222425, #12354a); */\n  background: #222425;\n  color: rgba(255, 255, 255, 0.8); }\n  .uk-offcanvas-content .uk-navbar-container .uk-navbar-nav > li > a, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-nav > li > a {\n    color: rgba(255, 255, 255, 0.8); }\n    .uk-offcanvas-content .uk-navbar-container .uk-navbar-nav > li > a:hover, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-nav > li > a:hover {\n      color: #f76f63; }\n  .uk-offcanvas-content .uk-navbar-container .uk-logo, .ch-offcanvas-wrapper .uk-navbar-container .uk-logo {\n    color: white;\n    font-size: 1rem;\n    text-transform: uppercase; }\n  .uk-offcanvas-content .uk-navbar-container .uk-navbar-toggle, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-toggle {\n    padding: 0px 0px 0px 15px;\n    color: rgba(255, 255, 255, 0.7); }\n\n.uk-offcanvas-content .uk-nav-default, .ch-offcanvas-wrapper .uk-nav-default {\n  font-size: 1rem; }\n\n.uk-offcanvas-content .ch-nav-heading, .ch-offcanvas-wrapper .ch-nav-heading {\n  color: #fff;\n  font-weight: bold;\n  border-bottom: 1px solid #fff; }\n\n.uk-offcanvas-content .ch-accent-color, .ch-offcanvas-wrapper .ch-accent-color {\n  color: #f76f63; }\n\n.uk-offcanvas-content .ch-nav-link, .ch-offcanvas-wrapper .ch-nav-link {\n  transition: .1s ease-in-out;\n  transition-property: color,background-color; }\n  .uk-offcanvas-content .ch-nav-link:hover, .ch-offcanvas-wrapper .ch-nav-link:hover {\n    color: #f76f63; }\n\n.uk-offcanvas-content .ch-sidebar-left, .ch-offcanvas-wrapper .ch-sidebar-left {\n  background: #333; }\n\n.uk-offcanvas-content .pin-counter, .ch-offcanvas-wrapper .pin-counter {\n  color: #f76f63;\n  font-weight: bold;\n  text-transform: uppercase; }\n\n.uk-offcanvas-content .ch-offcanvas-wrapper .uk-offcanvas-bar, .ch-offcanvas-wrapper .ch-offcanvas-wrapper .uk-offcanvas-bar {\n  width: 250px; }\n\n.ch-sidebar-left {\n  position: fixed;\n  top: 80px;\n  bottom: 0;\n  box-sizing: border-box;\n  width: 260px !important;\n  padding: 40px 20px;\n  border-right: 1px #e5e5e5 solid;\n  overflow: auto; }\n\n@media (min-width: 960px) {\n  .ch-sidebar-left + .ch-main {\n    padding-left: 260px; } }\n", ""]);
+exports.push([module.i, ".uk-modal-full {\n  background: rgba(0, 0, 0, 0.75); }\n\n.uk-modal-dialog {\n  background-color: transparent;\n  color: white; }\n\n.loading-text, .notice-text {\n  margin-top: 10px;\n  margin-bottom: 10px;\n  color: #fff; }\n\n.notice-message {\n  margin-top: 10px;\n  margin-bottom: 20px;\n  color: #fff; }\n\n.uk-accordion-title, .uk-accordion-title::after {\n  color: #fff; }\n\n.uk-accordion-content {\n  margin-top: 10px; }\n\n.uk-notification {\n  width: 400px; }\n\n.uk-notification-message {\n  font-size: 1em;\n  background: #f0506e;\n  color: #fff; }\n\n.about-text {\n  margin-top: 5px;\n  margin-bottom: 5px;\n  color: #fff; }\n\n.accent-text {\n  color: #f76f63; }\n\n.uk-badge {\n  margin-left: 2px;\n  margin-top: -5px; }\n\n.uk-offcanvas-content #map-container, .ch-offcanvas-wrapper #map-container {\n  height: calc(100vh - 80px); }\n\n.uk-offcanvas-content .uk-navbar-container, .ch-offcanvas-wrapper .uk-navbar-container {\n  /* background: linear-gradient(to left, #222425, #12354a); */\n  background: #222425;\n  color: rgba(255, 255, 255, 0.8); }\n  .uk-offcanvas-content .uk-navbar-container .uk-navbar-nav > li > a, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-nav > li > a {\n    color: rgba(255, 255, 255, 0.8); }\n    .uk-offcanvas-content .uk-navbar-container .uk-navbar-nav > li > a:hover, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-nav > li > a:hover {\n      color: #f76f63; }\n  .uk-offcanvas-content .uk-navbar-container .uk-logo, .ch-offcanvas-wrapper .uk-navbar-container .uk-logo {\n    color: white;\n    font-size: 1rem;\n    text-transform: uppercase; }\n  .uk-offcanvas-content .uk-navbar-container .uk-navbar-toggle, .ch-offcanvas-wrapper .uk-navbar-container .uk-navbar-toggle {\n    padding: 0px 0px 0px 15px;\n    color: rgba(255, 255, 255, 0.7); }\n\n.uk-offcanvas-content .uk-nav-default, .ch-offcanvas-wrapper .uk-nav-default {\n  font-size: 1rem; }\n\n.uk-offcanvas-content .ch-nav-heading, .ch-offcanvas-wrapper .ch-nav-heading {\n  color: #fff;\n  font-weight: bold;\n  border-bottom: 1px solid #fff; }\n\n.uk-offcanvas-content .ch-accent-color, .ch-offcanvas-wrapper .ch-accent-color {\n  color: #f76f63; }\n\n.uk-offcanvas-content .ch-nav-link, .ch-offcanvas-wrapper .ch-nav-link {\n  transition: .1s ease-in-out;\n  transition-property: color,background-color; }\n  .uk-offcanvas-content .ch-nav-link:hover, .ch-offcanvas-wrapper .ch-nav-link:hover {\n    color: #f76f63; }\n\n.uk-offcanvas-content .ch-sidebar-left, .ch-offcanvas-wrapper .ch-sidebar-left {\n  background: #333; }\n\n.uk-offcanvas-content .pin-counter, .ch-offcanvas-wrapper .pin-counter {\n  color: #f76f63;\n  font-weight: bold;\n  text-transform: uppercase; }\n\n.uk-offcanvas-content .ch-offcanvas-wrapper .uk-offcanvas-bar, .ch-offcanvas-wrapper .ch-offcanvas-wrapper .uk-offcanvas-bar {\n  width: 250px; }\n\n.ch-sidebar-left {\n  position: fixed;\n  top: 80px;\n  bottom: 0;\n  box-sizing: border-box;\n  width: 260px !important;\n  padding: 40px 20px;\n  border-right: 1px #e5e5e5 solid;\n  overflow: auto; }\n\n@media (min-width: 960px) {\n  .ch-sidebar-left + .ch-main {\n    padding-left: 260px; } }\n", ""]);
 
 // exports
 
