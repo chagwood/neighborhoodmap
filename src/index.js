@@ -9,14 +9,11 @@ var currentPlaceMarkers = []; //array of map markers that are displayed at any g
 var uniquePlaceMarkerIDs = {};
 var placeMarkersData = {}; //object to cache info for a selected place
 var placeNameData = [];
-var selectedPlaceName = ""; //currently selected place name
 var infoWindowMaxWidth = "200";
 var infoWindowImageHeight = "125";
 var defaultMarkerIcon = "//maps.google.com/mapfiles/ms/icons/red-pushpin.png";
 var selectedMarkerIcon = "//maps.google.com/mapfiles/ms/icons/ylw-pushpin.png";
-var warningText = "";
 var viewModel;
-var errorQueue = [];
 /* ------------------------------------------------------------------ */
 /* name attribute is used in Google Places; label for navigation */
 var placesList = [{
@@ -248,7 +245,6 @@ function AppViewModel() {
     self.categories = ko.observableArray(placesList);
     self.places = ko.observableArray(placeNameData);
     self.categoryCount = ko.observable(placesList.length);
-    self.setSelectedPlaceCategory
     self.filterNames = ko.computed(function() {
         var filter = this.selectedCategoryName().toLowerCase();
         if (!filter) {
@@ -264,7 +260,7 @@ function AppViewModel() {
     }, this);
     self.setCategoryFilter = function(categoryName) {
         this.selectedCategoryName(categoryName);
-    }
+    };
     self.incrementLoadCounter = function() {
         this.categoriesLoaded(this.categoriesLoaded() + 1);
     };
