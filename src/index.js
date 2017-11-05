@@ -4,6 +4,7 @@ var map;
 var infowindow;
 var placesService;
 var mapCenter = {lat: 38.958292, lng: -77.360039}; //initial map center and central point which the radius is measued from when finding places
+var mapZoom = 13;
 var currentPlaceMarkers = []; //array of map markers that are displayed at any given time
 var uniquePlaceMarkerIDs = {};
 var placeMarkersData = {}; //object to cache info for a selected place
@@ -157,7 +158,7 @@ function initMap() {
         fullscreenControl: false,
         streetViewControl: false,
         mapTypeControl: false,
-        zoom: 13,
+        zoom: mapZoom,
         clickableIcons: false,
         styles: [{
             "featureType": "all",
@@ -285,6 +286,10 @@ function AppViewModel() {
     self.reloadData = function() {
         reloadAllData();
     };
+    self.recenterMap = function() {
+        map.setCenter(mapCenter);
+        map.setZoom(mapZoom);
+    }
 }
 /* ------------------------------------------------------------------ */
 function loadInitialPlaces() {
