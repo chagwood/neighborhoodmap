@@ -289,7 +289,7 @@ function AppViewModel() {
     self.recenterMap = function() {
         map.setCenter(mapCenter);
         map.setZoom(mapZoom);
-    }
+    };
 }
 /* ------------------------------------------------------------------ */
 function loadInitialPlaces() {
@@ -338,7 +338,7 @@ function getPlacesForType(type) {
                         placeObj.place = results[i];
                         placeObj.nearByImg = null;
                         placeObj.id = results[i].id;
-                        getFlickrPhotoForLocation(placeObj.place.geometry.location.lat, placeObj.place.geometry.location.lng, placeObj)
+                        getFlickrPhotoForLocation(placeObj.place.geometry.location.lat, placeObj.place.geometry.location.lng, placeObj);
                         placeMarkersData[currentPlaceType].push(placeObj);
                         if(uniquePlaceMarkerIDs[placeObj.id] === undefined) {
                             createMapMarker(placeObj);
