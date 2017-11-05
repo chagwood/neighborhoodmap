@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.30/js/uikit.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.30/js/uikit-icons.min.js" defer></script>
     <script src="bundle.js"></script>
-    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-ukoWUS6t1TVxoXi3SP_VfFTj9IRLQ78&libraries=places&callback=startApp" onerror="loadingError()"></script>
+    <script async src="https://mapsd.googleapis.com/maps/api/js?key=AIzaSyA-ukoWUS6t1TVxoXi3SP_VfFTj9IRLQ78&libraries=places&callback=startApp" onerror="loadingError()"></script>
     
 </head>
 
@@ -66,8 +66,8 @@
         </div>
         <div class="ch-sidebar-left uk-visible@m">
             <div class="pin-counter"><span data-bind="text: pinsDisplayed">0</span> pins shown</div>
-            <ul uk-accordion>
-                    <li>
+            <ul uk-accordion="multiple: true">
+                    <li class="uk-open">
                         <h4 class="uk-accordion-title">ACTIONS</h4>
                         <div class="uk-accordion-content">
                                 <ul class="uk-nav uk-nav-default tm-nav">
@@ -89,7 +89,7 @@
                     <li>
                         <h4 class="uk-accordion-title">PLACES</h4>
                         <div class="uk-accordion-content">
-                                <ul class="uk-nav uk-nav-default tm-nav" data-bind="foreach: places.sort(function(a,b) {return (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : ((b.label.toLowerCase() > a.label.toLowerCase()) ? -1 : 0);})" style="margin-top: 0px !important">
+                                <ul class="uk-nav uk-nav-default tm-nav" data-bind="foreach: filterNames().sort(function(a,b) {return (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : ((b.label.toLowerCase() > a.label.toLowerCase()) ? -1 : 0);})" style="margin-top: 0px !important">
                                     <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayPlace"></a></li>
                                 </ul>
                         </div>
@@ -106,8 +106,8 @@
         <div id="ch-offcanvas" class="ch-offcanvas-wrapper" uk-offcanvas="overlay: true; mode: push">
             <div class="uk-offcanvas-bar"> 
                 <div class="pin-counter"><span data-bind="text: pinsDisplayed">0</span> pins shown</div>
-                <ul uk-accordion>
-                        <li>
+                <ul uk-accordion="multiple: true">
+                        <li class="uk-open">
                             <h4 class="uk-accordion-title">ACTIONS</h4>
                             <div class="uk-accordion-content">
                                     <ul class="uk-nav uk-nav-default tm-nav">
@@ -129,7 +129,7 @@
                         <li>
                             <h4 class="uk-accordion-title">PLACES</h4>
                             <div class="uk-accordion-content">
-                                    <ul class="uk-nav uk-nav-default tm-nav" data-bind="foreach: places.sort(function(a,b) {return (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : ((b.label.toLowerCase() > a.label.toLowerCase()) ? -1 : 0);})" style="margin-top: 0px !important">
+                                    <ul class="uk-nav uk-nav-default tm-nav" data-bind="foreach: filterNames().sort(function(a,b) {return (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : ((b.label.toLowerCase() > a.label.toLowerCase()) ? -1 : 0);})" style="margin-top: 0px !important">
                                         <li class=""><a class="ch-nav-link" href="#" data-bind="text: label, click: $parent.displayPlace"></a></li>
                                     </ul>
                             </div>

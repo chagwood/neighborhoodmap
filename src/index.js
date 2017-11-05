@@ -16,6 +16,7 @@ var defaultMarkerIcon = "//maps.google.com/mapfiles/ms/icons/red-pushpin.png";
 var selectedMarkerIcon = "//maps.google.com/mapfiles/ms/icons/ylw-pushpin.png";
 var warningText = "";
 var viewModel;
+var errorQueue = [];
 /* ------------------------------------------------------------------ */
 /* name attribute is used in Google Places; label for navigation */
 var placesList = [{
@@ -238,6 +239,7 @@ function initMap() {
 /* ------------------------------------------------------------------ */
 function AppViewModel() {
     var self = this;
+    self.selectedCategoryName = ko.observable("");
     self.categoriesLoaded = ko.observable(0);
     self.pinsDisplayed = ko.observable(0);
     self.notificationText = ko.observable("");
@@ -246,6 +248,23 @@ function AppViewModel() {
     self.categories = ko.observableArray(placesList);
     self.places = ko.observableArray(placeNameData);
     self.categoryCount = ko.observable(placesList.length);
+    self.setSelectedPlaceCategory
+    self.filterNames = ko.computed(function() {
+        var filter = this.selectedCategoryName().toLowerCase();
+        if (!filter) {
+            return this.places();
+        } else {
+            return ko.utils.arrayFilter(this.places(), function(theplace) {
+                if(theplace.place.place.types.indexOf(filter) >= 0) {
+                    return true;
+                }
+                return false;
+            });
+        }
+    }, this);
+    self.setCategoryFilter = function(categoryName) {
+        this.selectedCategoryName(categoryName);
+    }
     self.incrementLoadCounter = function() {
         this.categoriesLoaded(this.categoriesLoaded() + 1);
     };
@@ -267,8 +286,9 @@ function AppViewModel() {
     };
     self.displayCategory = function() {
         clearMapMarkers();
-        selectedPlaceName = this.name;
-        if(placeMarkersData[selectedPlaceName] === undefined) {
+        viewModel.setCategoryFilter(this.name);
+        //selectedPlaceName = this.name;
+        if(placeMarkersData[viewModel.selectedCategoryName()] === undefined) {
             placesService.nearbySearch({
                 location: mapCenter,
                 radius: 5000,
@@ -281,9 +301,11 @@ function AppViewModel() {
     };
     self.resetMap = function() {
         clearMapMarkers();
+        this.selectedCategoryName("");
         displayAllMakers();
     };
     self.reloadData = function() {
+        this.selectedCategoryName("");
         reloadAllData();
     };
     self.recenterMap = function() {
@@ -367,15 +389,15 @@ function placesServiceCallback(results, status) {
     //console.log(results);
     //console.log(status);
     if (status === google.maps.places.PlacesServiceStatus.OK) {
-        if(selectedPlaceName !== "") {
-            if(placeMarkersData[selectedPlaceName] === undefined) {
-                placeMarkersData[selectedPlaceName] = [];
+        if(viewModel.selectedCategoryName() !== "") {
+            if(placeMarkersData[viewModel.selectedCategoryName()] === undefined) {
+                placeMarkersData[viewModel.selectedCategoryName()] = [];
             }
         }
 
         for (var i = 0; i < results.length; i++) {
-            if(selectedPlaceName !== "") {
-                placeMarkersData[selectedPlaceName].push(results[i]);
+            if(viewModel.selectedCategoryName() !== "") {
+                placeMarkersData[viewModel.selectedCategoryName()].push(results[i]);
             }
             createMapMarker(results[i]);
         }
@@ -459,8 +481,9 @@ function getFlickrPhotoForLocation(latcoord, lngcoord, currentItem) {
 }
 /* ------------------------------------------------------------------ */
 function loadingError() {
-    viewModel.displayNotice("There was an error loading the Google Maps API. App cannot continue.");
+    UIkit.notification("There was an error loading the Google Maps API. App cannot continue.", {timeout: 10000});
 }
+window.loadingError = loadingError; //must set this to window or callback doesn't work
 /* ------------------------------------------------------------------ */
 /* If the markers from a place has been cached, display the markers stored in the item's array */
 function displayCategoryMarkers(name) {
@@ -561,5 +584,5 @@ function startApp() {
         UIkit.modal("#about-overlay").hide();
     });
 }
-window.startApp = startApp; //must set this to window or initial initMap callback doesn't work
+window.startApp = startApp; //must set this to window or callback doesn't work
 /* ------------------------------------------------------------------ */
