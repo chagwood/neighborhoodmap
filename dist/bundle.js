@@ -428,9 +428,9 @@ function loadInitialPlaces() {
         //drop all the pins...
     }).catch(function(result){
         if(result == "OVER_QUERY_LIMIT") {
-            viewModel.displayNotice("Async calls were throttled. Try refreshing data again.");
+            UIkit.notification("Async calls were throttled. Try refreshing data again.", {timeout: 10000});
         } else {
-            viewModel.displayNotice(result);
+            UIkit.notification(result, {timeout: 10000});
         }
     });
 }
@@ -569,10 +569,10 @@ function getFlickrPhotoForLocation(latcoord, lngcoord, currentItem) {
             }
             else {
                 //show error
-                viewModel.displayNotice(resp);
+                UIkit.notification(resp, {timeout: 10000});
             }
         }).fail(function() {
-            viewModel.displayNotice("An error occured while calling the Flickr API for a location's nearby photo. Some images may be unavailable.");
+            UIkit.notification("An error occured while calling the Flickr API for a location's nearby photo. Some images may be unavailable.", {timeout: 10000});
         });
 }
 /* ------------------------------------------------------------------ */
